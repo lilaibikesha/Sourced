@@ -1,0 +1,365 @@
+{
+  "meta": {
+    "site_name": "Application Planner",
+    "disclaimer": "An unofficial student-made tool. Not affiliated with Minerva University. Always check official requirements at minerva.edu.",
+    "last_checked": "2026-11-07",
+    "last_checked_display": "Nov 7, 2026",
+    "contact_email": "admissions@minerva.edu",
+    "official_sources": [
+      { "label": "Minerva undergraduate admissions", "url": "https://www.minerva.edu/undergraduate/admissions/", "last_checked": "2026-11-07" },
+      { "label": "Apply to Minerva", "url": "https://www.minerva.edu/apply/", "last_checked": "2026-11-07" }
+    ],
+    "privacy_note": "Everything you enter stays in this browser tab. Nothing is saved or sent anywhere."
+  },
+
+  "cycle": {
+    "label": "Undergraduate admissions cycle with deadlines from Nov 2026 to Mar 2027",
+    "deadline_time_note": "Minerva lists dates only. This planner treats each deadline as the end of that day. Ask admissions@minerva.edu if you need the exact time and time zone.",
+    "source": "https://www.minerva.edu/undergraduate/admissions/",
+    "last_checked": "2026-11-07",
+    "rounds": [
+      {
+        "id": "early-action",
+        "name": "Early Action (Binding Optional)",
+        "admissions_deadline": "2026-11-01",
+        "financial_aid_deadline": "2026-11-08",
+        "decision_by": "2026-12-18",
+        "note": "Binding option: if admitted, you must enroll and withdraw other applications within 10 days of your decision.",
+        "source": "https://www.minerva.edu/undergraduate/admissions/",
+        "last_checked": "2026-11-07"
+      },
+      {
+        "id": "regular-decision-1",
+        "name": "Regular Decision I",
+        "admissions_deadline": "2027-01-05",
+        "financial_aid_deadline": "2027-01-12",
+        "decision_by": "2027-02-26",
+        "note": "Non-binding.",
+        "source": "https://www.minerva.edu/undergraduate/admissions/",
+        "last_checked": "2026-11-07"
+      },
+      {
+        "id": "regular-decision-2",
+        "name": "Regular Decision II",
+        "admissions_deadline": "2027-03-02",
+        "financial_aid_deadline": "2027-03-09",
+        "decision_by": "2027-04-12",
+        "note": "Non-binding.",
+        "source": "https://www.minerva.edu/undergraduate/admissions/",
+        "last_checked": "2026-11-07"
+      }
+    ]
+  },
+
+  "school_types": [
+    {
+      "id": "international",
+      "label": "International school (IB, A-level or similar)",
+      "short_label": "International school",
+      "guide": "guide-international-school.html",
+      "extra_waiting_days": 0,
+      "source": "placeholder estimate",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "local",
+      "label": "Local/ordinary school, possibly without a school counselor",
+      "short_label": "Local school",
+      "guide": "guide-local-school.html",
+      "extra_waiting_days": 14,
+      "extra_waiting_note": "Your school may not have done this before, so school steps get 14 extra days.",
+      "source": "placeholder estimate",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "unsure",
+      "label": "Not sure",
+      "short_label": "Not sure",
+      "guide": "guide-local-school.html",
+      "also_guide": "guide-international-school.html",
+      "extra_waiting_days": 14,
+      "extra_waiting_note": "Since you're not sure, the planner gives school steps 14 extra days to be safe.",
+      "source": "placeholder estimate",
+      "last_checked": "2026-11-07"
+    }
+  ],
+
+  "planning": {
+    "buffer_days_before_deadline": 3,
+    "buffer_note": "The plan aims to finish 3 days before each deadline, in case something goes wrong.",
+    "default_hours_per_week": 2,
+    "source": "placeholder estimate",
+    "last_checked": "2026-11-07"
+  },
+
+  "own_steps": [
+    {
+      "id": "part1",
+      "name": "Part 1: personal and academic information",
+      "minutes_min": 10,
+      "minutes_max": 15,
+      "needs_computer": false,
+      "tip": "Applicants under 18 also give a parent or guardian's contact details. You can save and come back later.",
+      "source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "challenge-math",
+      "name": "Challenge: Math",
+      "group": "challenge",
+      "minutes_min": 8,
+      "minutes_max": 20,
+      "needs_computer": true,
+      "tip": "Timed. No preparation needed. Use a quiet, distraction-free place.",
+      "source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "challenge-logical-reasoning",
+      "name": "Challenge: Logical Reasoning",
+      "group": "challenge",
+      "minutes_min": 8,
+      "minutes_max": 20,
+      "needs_computer": true,
+      "tip": "Timed. No preparation needed. Use a quiet, distraction-free place.",
+      "source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "challenge-reading-comprehension",
+      "name": "Challenge: Reading Comprehension",
+      "group": "challenge",
+      "minutes_min": 8,
+      "minutes_max": 20,
+      "needs_computer": true,
+      "tip": "Timed. No preparation needed. Use a quiet, distraction-free place.",
+      "source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "challenge-divergent-thinking",
+      "name": "Challenge: Divergent Thinking",
+      "group": "challenge",
+      "minutes_min": 8,
+      "minutes_max": 20,
+      "needs_computer": true,
+      "tip": "Timed. No preparation needed. Use a quiet, distraction-free place.",
+      "source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "communication-written",
+      "name": "Written communication task",
+      "group": "challenge",
+      "minutes_min": 20,
+      "minutes_max": 20,
+      "needs_computer": true,
+      "tip": "Explores your perspectives and experiences. Minerva lists 'written and verbal communication tasks' at about 20 minutes each but doesn't state an exact number.",
+      "source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "communication-verbal",
+      "name": "Verbal communication task",
+      "group": "challenge",
+      "minutes_min": 20,
+      "minutes_max": 20,
+      "needs_computer": true,
+      "tip": "Explores your perspectives and experiences. Minerva lists 'written and verbal communication tasks' at about 20 minutes each but doesn't state an exact number.",
+      "source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "accomplishments",
+      "name": "Accomplishments",
+      "minutes_min": 60,
+      "minutes_max": 60,
+      "needs_computer": false,
+      "tip": "Describe what you did and what you learned, with supporting documents, links or references. Be specific about your own role.",
+      "source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "academic-background",
+      "name": "Academic background section",
+      "minutes_min": 10,
+      "minutes_max": 15,
+      "needs_computer": false,
+      "tip": "Your most recent three years of academic records (can be from more than one school) and verification from a school counselor or equivalent official.",
+      "source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    }
+  ],
+
+  "waiting_steps": [
+    {
+      "id": "records",
+      "name": "School sends your academic records (most recent three years)",
+      "done_label": "I've asked my school for my records",
+      "days_min": 14,
+      "days_max": 21,
+      "school_dependent": true,
+      "deadline": "admissions",
+      "tip": "Ask early. Your records may come from more than one school.",
+      "source": "placeholder estimate",
+      "requirement_source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "verification",
+      "name": "School counselor or equivalent official completes verification",
+      "done_label": "School official verification is done",
+      "days_min": 14,
+      "days_max": 21,
+      "school_dependent": true,
+      "deadline": "admissions",
+      "tip": "No counselor? See the local school guide for who could be an equivalent official.",
+      "source": "placeholder estimate",
+      "requirement_source": "https://www.minerva.edu/undergraduate/admissions/",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "translations",
+      "name": "Translations of records that aren't in English",
+      "days_min": 14,
+      "days_max": 28,
+      "school_dependent": false,
+      "deadline": "admissions",
+      "tip": "Minerva's admissions page doesn't explain translation rules. Before you pay for one, ask admissions@minerva.edu what kind of translation they accept.",
+      "source": "placeholder estimate",
+      "requirement_source": "Not stated on the admissions page. Ask admissions@minerva.edu.",
+      "last_checked": "2026-11-07"
+    },
+    {
+      "id": "financial-documents",
+      "name": "Gather parent/guardian financial documents",
+      "days_min": 14,
+      "days_max": 21,
+      "school_dependent": false,
+      "deadline": "financial_aid",
+      "tip": "If you're applying for financial aid: documents such as income statements and tax returns. Funding is limited, so earlier is better.",
+      "source": "placeholder estimate",
+      "requirement_source": "https://www.minerva.edu/apply/",
+      "last_checked": "2026-11-07"
+    }
+  ],
+
+  "computer": {
+    "requirement": "Use a reliable desktop or laptop computer with a stable internet connection.",
+    "no_access_note": "You'll need a desktop or laptop for the challenges. Arrange one before your first challenge: ask your school's computer room, a public library, or a friend or relative.",
+    "source": "https://www.minerva.edu/undergraduate/admissions/",
+    "last_checked": "2026-11-07"
+  },
+
+  "start_page": {
+    "question": "What kind of school are you at?",
+    "intro": "Answer one question and get a plan with start dates for each part of your Minerva application.",
+    "source": "https://www.minerva.edu/undergraduate/admissions/",
+    "last_checked": "2026-11-07"
+  },
+
+  "guides": {
+    "international": {
+      "title": "Guide for international schools",
+      "subtitle": "For students at IB, A-level or other international schools.",
+      "sections": [
+        {
+          "heading": "Which records to send",
+          "items": [
+            "Minerva asks for your most recent three years of academic records. These can include transcripts from more than one school.",
+            "Minerva also asks for verification from a school counselor or equivalent official.",
+            "Questions about predicted grades, IB or A-level results, or exactly which documents count? Ask Minerva at admissions@minerva.edu."
+          ],
+          "source": "https://www.minerva.edu/undergraduate/admissions/",
+          "last_checked": "2026-11-07"
+        },
+        {
+          "heading": "Working with your counselor",
+          "items": [
+            "Tell your counselor early which round you're aiming for and its deadline. The planner shows the date to ask by.",
+            "Your counselor is the person most likely to provide the verification Minerva asks for.",
+            "Not sure what your counselor needs to send, or where? Ask Minerva at admissions@minerva.edu."
+          ],
+          "source": "https://www.minerva.edu/undergraduate/admissions/",
+          "last_checked": "2026-11-07"
+        },
+        {
+          "heading": "Timing around mock exams and predicted grades",
+          "items": [
+            "Minerva's admissions page doesn't mention mock exams or predicted grades. Ask Minerva at admissions@minerva.edu.",
+            "Minerva says to do the challenges in a focused, distraction-free place. Avoid scheduling them during mock exam weeks.",
+            "You can save your application and come back later. You don't have to do it all at once."
+          ],
+          "source": "https://www.minerva.edu/undergraduate/admissions/",
+          "last_checked": "2026-11-07"
+        }
+      ]
+    },
+    "local": {
+      "title": "Guide for local schools",
+      "subtitle": "For students at schools without a counselor, or where staff have never done this before.",
+      "sections": [
+        {
+          "heading": "Step 1: Find your equivalent official",
+          "items": [
+            "Minerva asks for verification from a school counselor or equivalent official.",
+            "If your school has no counselor, think about who handles official records: for example the principal, the registrar, or a head teacher.",
+            "Not sure if someone counts as an equivalent official? Email admissions@minerva.edu before your deadline."
+          ],
+          "source": "https://www.minerva.edu/undergraduate/admissions/",
+          "last_checked": "2026-11-07"
+        },
+        {
+          "heading": "Step 2: Ask them, early",
+          "items": [
+            "Ask in person if you can, and give them the message below (printed or sent).",
+            "Tell them your deadline. Use the date the planner gives you, which leaves time for the school to act.",
+            "Give them Minerva's contact, admissions@minerva.edu, in case they have questions."
+          ],
+          "source": "placeholder estimate",
+          "last_checked": "2026-11-07"
+        },
+        {
+          "heading": "Step 3: What they need to send, and where",
+          "items": [
+            "Your most recent three years of academic records. These can come from more than one school.",
+            "Verification from them as your school counselor or equivalent official.",
+            "Minerva's admissions page doesn't say exactly how or where the school sends these. Check the instructions in your application, or ask admissions@minerva.edu."
+          ],
+          "source": "https://www.minerva.edu/undergraduate/admissions/",
+          "last_checked": "2026-11-07"
+        }
+      ],
+      "message": {
+        "heading": "A message you can give your school official",
+        "note": "Replace the parts in [brackets]. If your school official doesn't read English, translate this message into your school's language first.",
+        "text": "Dear [Name of school official],\n\nMy name is [Your full name], and I am a student in [your class/grade] at [school name]. I am applying to Minerva University, and the application needs two things from my school:\n\n1. My academic records for the last three years, sent directly by the school.\n2. The school's academic form: a verification from a school counselor or an equivalent official. Our school does not have a counselor, so I would be very grateful if you could act as the equivalent official.\n\nMy application deadline is [deadline]. I will share Minerva's instructions with you as soon as I have them. If you have any questions, Minerva's admissions team can be reached at admissions@minerva.edu.\n\nThank you very much for your help.\n\nKind regards,\n[Your full name]",
+        "source": "https://www.minerva.edu/undergraduate/admissions/",
+        "last_checked": "2026-11-07"
+      },
+      "translations": {
+        "heading": "If your records aren't in English",
+        "items": [
+          "Minerva's admissions page doesn't explain what translations it accepts.",
+          "Before you pay for a translation, email admissions@minerva.edu and ask what kind of translation they need.",
+          "Start early. Translations can take weeks, so the planner schedules them as a waiting step."
+        ],
+        "source": "https://www.minerva.edu/undergraduate/admissions/",
+        "last_checked": "2026-11-07"
+      },
+      "computer_checklist": {
+        "heading": "Laptop access checklist",
+        "items": [
+          "I have a desktop or laptop I can use (Minerva says a reliable desktop or laptop is needed).",
+          "The internet connection there is stable.",
+          "I can use it in a quiet place without interruptions for about 20 minutes per challenge.",
+          "I've booked time on it (school computer room, public library, or a friend or relative) before my first challenge date.",
+          "Not sure the computer has what the verbal communication task needs? Ask admissions@minerva.edu."
+        ],
+        "source": "https://www.minerva.edu/undergraduate/admissions/",
+        "last_checked": "2026-11-07"
+      },
+      "equivalent_official_notice": "Not sure if someone counts as an equivalent official? Email admissions@minerva.edu before your deadline."
+    }
+  }
+}
