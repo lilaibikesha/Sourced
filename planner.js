@@ -47,6 +47,7 @@
       ["index.html", "Start", "start"],
       ["planner.html", "Planner", "planner"],
       ["guide-international-school.html", "International school guide", "intl"],
+      ["guide-us-school.html", "US school guide", "us"],
       ["guide-local-school.html", "Local school guide", "local"]
     ];
     const header = document.getElementById("site-header");
@@ -94,8 +95,9 @@
           el("h2", {}, el("span", { class: "letter" }, String.fromCharCode(97 + i) + ")"), s.label),
           el("div", { class: "actions" },
             el("a", { class: "btn", href: "planner.html?school=" + encodeURIComponent(s.id) }, "Plan my application"),
-            el("a", { href: s.guide }, s.also_guide ? "Local school guide" : "Read the guide"),
-            s.also_guide ? el("a", { href: s.also_guide }, "International school guide") : null
+            s.guide
+              ? el("a", { href: s.guide }, "Read the guide")
+              : data.school_types.filter(o => o.guide).map(o => el("a", { href: o.guide }, o.guide_label))
           )
         ))
       ),
@@ -176,13 +178,14 @@
         el("p", { id: "cal-info", class: "cal-info", "aria-live": "polite" })
       )
     );
-    form.addEventListener("input", () => update(data));
+    form.addEventListener("input", e => { if (e.target.name === "translations") state.translationsTouched = true; update(data); });
     form.addEventListener("change", () => update(data));
     form.addEventListener("submit", e => e.preventDefault());
   }
 
   // ---------- busy-days state (kept in memory, this tab only) ----------
-  const state = { busy: new Set(), selected: null, info: "", focus: null };
+  // touched: days the student tapped, so school-type defaults never override their choice.
+  const state = { busy: new Set(), selected: null, info: "", focus: null, touched: new Set(), school: null, schoolBusy: new Set(), translationsTouched: false };
   function iso(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
   function initBusy(data) {
     const t = today();
@@ -190,7 +193,25 @@
       for (let d = parseDate(r.start); d <= parseDate(r.end); d = addDays(d, 1))
         if (d >= t) state.busy.add(iso(d));
   }
-  function update(data) { renderPlan(data); }
+  // School-specific defaults: extra busy days (e.g. Thanksgiving for US schools) and the translations answer.
+  function applySchoolDefaults(data) {
+    const form = document.getElementById("plan-form");
+    const id = form && form.elements.school ? form.elements.school.value : null;
+    if (!id || id === state.school) return;
+    state.school = id;
+    const school = data.school_types.find(s => s.id === id) || {};
+    for (const k of state.schoolBusy) if (!state.touched.has(k)) state.busy.delete(k);
+    state.schoolBusy = new Set();
+    const t = today();
+    for (const r of (school.default_busy || []))
+      for (let d = parseDate(r.start); d <= parseDate(r.end); d = addDays(d, 1)) {
+        const k = iso(d);
+        if (d >= t && !state.touched.has(k) && !state.busy.has(k)) { state.busy.add(k); state.schoolBusy.add(k); }
+      }
+    if (!state.translationsTouched && school.translations_default && form.elements.translations)
+      form.elements.translations.value = school.translations_default;
+  }
+  function update(data) { applySchoolDefaults(data); renderPlan(data); }
 
   // Schedules own steps backwards from the target date, only on free days from today on.
   // Each free day holds (hours per week / 7) hours. A step short enough for one day stays on one day.
@@ -452,6 +473,7 @@
               state.info = fmtShort(day) + ": " + steps.join(", ") + ". Tap again to mark this day busy.";
             } else {
               if (busy) state.busy.delete(k); else state.busy.add(k);
+              state.touched.add(k);
               state.selected = null;
               state.info = fmtShort(day) + (busy ? " is free again." : " marked busy.");
             }
@@ -473,8 +495,10 @@
 
     // Holiday note, only when the default busy days fall inside the calendar.
     const note = document.getElementById("cal-note");
-    const showsHoliday = (data.calendar.default_busy || []).some(r => parseDate(r.end) >= t && parseDate(r.start) <= end);
-    note.textContent = showsHoliday ? data.calendar.default_busy_note : "";
+    const school = data.school_types.find(s => s.id === input.school) || {};
+    const defaults = [...(data.calendar.default_busy || []), ...(school.default_busy || [])];
+    const showsHoliday = defaults.some(r => parseDate(r.end) >= t && parseDate(r.start) <= end);
+    note.textContent = showsHoliday ? (school.default_busy_note || data.calendar.default_busy_note) : "";
     note.hidden = !showsHoliday;
 
     const n = [...state.busy].filter(k => parseDate(k) >= t).length;
@@ -502,13 +526,13 @@
     return parts.map(p => p === "admissions@minerva.edu" ? el("a", { href: "mailto:admissions@minerva.edu" }, p) : p);
   }
 
-  function renderGuideIntl(data) {
-    const g = data.guides.international;
+  function renderGuideIntl(data, key, schoolId) {
+    const g = data.guides[key || "international"];
     document.getElementById("app").replaceChildren(
       el("h1", {}, g.title),
       el("p", { class: "lede" }, g.subtitle),
-      el("p", {}, el("a", { class: "btn", href: "planner.html?school=international" }, "Open the planner")),
-      g.sections.map(s => section(s)),
+      el("p", {}, el("a", { class: "btn", href: "planner.html?school=" + (schoolId || "international") }, "Open the planner")),
+      ...g.sections.map(s => section(s)),
       el("div", { class: "callout" }, "Anything not covered here? Ask Minerva at ", el("a", { href: "mailto:admissions@minerva.edu" }, "admissions@minerva.edu"), ".")
     );
   }
@@ -531,7 +555,7 @@
       el("p", { class: "lede" }, g.subtitle),
       el("div", { class: "callout" }, linkEmail(g.equivalent_official_notice)),
       el("p", {}, el("a", { class: "btn", href: "planner.html?school=local" }, "Open the planner")),
-      g.sections.map(s => section(s)),
+      ...g.sections.map(s => section(s)),
       el("section", { id: "message" },
         el("h2", {}, g.message.heading),
         el("p", {}, g.message.note),
@@ -565,6 +589,7 @@
     if (page === "start") renderStart(data);
     if (page === "planner") { initBusy(data); renderPlannerForm(data); update(data); }
     if (page === "intl") renderGuideIntl(data);
+    if (page === "us") renderGuideIntl(data, "us", "us");
     if (page === "local") renderGuideLocal(data);
   }
   boot();

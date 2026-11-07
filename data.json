@@ -6,12 +6,19 @@
     "last_checked_display": "Nov 7, 2026",
     "contact_email": "admissions@minerva.edu",
     "official_sources": [
-      { "label": "Minerva undergraduate admissions", "url": "https://www.minerva.edu/undergraduate/admissions/", "last_checked": "2026-11-07" },
-      { "label": "Apply to Minerva", "url": "https://www.minerva.edu/apply/", "last_checked": "2026-11-07" }
+      {
+        "label": "Minerva undergraduate admissions",
+        "url": "https://www.minerva.edu/undergraduate/admissions/",
+        "last_checked": "2026-11-07"
+      },
+      {
+        "label": "Apply to Minerva",
+        "url": "https://www.minerva.edu/apply/",
+        "last_checked": "2026-11-07"
+      }
     ],
     "privacy_note": "Everything you enter stays in this browser tab. Nothing is saved or sent anywhere."
   },
-
   "cycle": {
     "label": "Undergraduate admissions cycle with deadlines from Nov 2026 to Mar 2027",
     "deadline_time_note": "Minerva lists dates only. This planner treats each deadline as the end of that day. Ask admissions@minerva.edu if you need the exact time and time zone.",
@@ -50,7 +57,6 @@
       }
     ]
   },
-
   "school_types": [
     {
       "id": "international",
@@ -59,31 +65,49 @@
       "guide": "guide-international-school.html",
       "extra_waiting_days": 0,
       "source": "placeholder estimate",
+      "last_checked": "2026-11-07",
+      "guide_label": "International school guide"
+    },
+    {
+      "id": "us",
+      "label": "US high school (public or private)",
+      "short_label": "US school",
+      "guide": "guide-us-school.html",
+      "guide_label": "US school guide",
+      "extra_waiting_days": 0,
+      "translations_default": "no",
+      "default_busy": [
+        {
+          "start": "2026-11-26",
+          "end": "2026-11-27",
+          "label": "Thanksgiving"
+        }
+      ],
+      "default_busy_note": "Thanksgiving and winter break are marked busy. Tap to change.",
+      "source": "placeholder estimate",
       "last_checked": "2026-11-07"
     },
     {
       "id": "local",
-      "label": "Local/ordinary school, possibly without a school counselor",
-      "short_label": "Local school",
+      "label": "Local school outside the US, possibly without a counselor",
+      "short_label": "Local school outside the US",
       "guide": "guide-local-school.html",
       "extra_waiting_days": 14,
       "extra_waiting_note": "Your school may not have done this before, so school steps get 14 extra days.",
       "source": "placeholder estimate",
-      "last_checked": "2026-11-07"
+      "last_checked": "2026-11-07",
+      "guide_label": "Local school guide (outside the US)"
     },
     {
       "id": "unsure",
       "label": "Not sure",
       "short_label": "Not sure",
-      "guide": "guide-local-school.html",
-      "also_guide": "guide-international-school.html",
       "extra_waiting_days": 14,
       "extra_waiting_note": "Since you're not sure, the planner gives school steps 14 extra days to be safe.",
       "source": "placeholder estimate",
       "last_checked": "2026-11-07"
     }
   ],
-
   "planning": {
     "buffer_days_before_deadline": 3,
     "buffer_note": "The plan aims to finish 3 days before each deadline, in case something goes wrong.",
@@ -91,7 +115,6 @@
     "source": "placeholder estimate",
     "last_checked": "2026-11-07"
   },
-
   "own_steps": [
     {
       "id": "part1",
@@ -190,7 +213,6 @@
       "last_checked": "2026-11-07"
     }
   ],
-
   "waiting_steps": [
     {
       "id": "records",
@@ -243,11 +265,14 @@
       "last_checked": "2026-11-07"
     }
   ],
-
   "calendar": {
     "week_starts": "monday",
     "default_busy": [
-      { "start": "2026-12-24", "end": "2027-01-01", "label": "Winter holidays" }
+      {
+        "start": "2026-12-24",
+        "end": "2027-01-01",
+        "label": "Winter holidays"
+      }
     ],
     "default_busy_note": "Winter holidays are marked busy. Tap to change.",
     "busy_rules": [
@@ -257,21 +282,18 @@
     "source": "placeholder estimate",
     "last_checked": "2026-11-07"
   },
-
   "computer": {
     "requirement": "Use a reliable desktop or laptop computer with a stable internet connection.",
     "no_access_note": "You'll need a desktop or laptop for the challenges. Arrange one before your first challenge: ask your school's computer room, a public library, or a friend or relative.",
     "source": "https://www.minerva.edu/undergraduate/admissions/",
     "last_checked": "2026-11-07"
   },
-
   "start_page": {
     "question": "What kind of school are you at?",
     "intro": "Answer one question and get a plan with start dates for each part of your Minerva application.",
     "source": "https://www.minerva.edu/undergraduate/admissions/",
     "last_checked": "2026-11-07"
   },
-
   "guides": {
     "international": {
       "title": "Guide for international schools",
@@ -309,9 +331,23 @@
         }
       ]
     },
+    "us": {
+      "title": "Guide for US high schools",
+      "subtitle": "For students at public or private high schools in the US.",
+      "sections": [
+        {
+          "heading": "Your counselor and records",
+          "items": [
+            "Minerva asks for your most recent three years of academic records and verification from a school counselor or equivalent official."
+          ],
+          "source": "https://www.minerva.edu/undergraduate/admissions/",
+          "last_checked": "2026-11-07"
+        }
+      ]
+    },
     "local": {
-      "title": "Guide for local schools",
-      "subtitle": "For students at schools without a counselor, or where staff have never done this before.",
+      "title": "Guide for local schools outside the US",
+      "subtitle": "For students at schools outside the US without a counselor, or where staff have never done this before.",
       "sections": [
         {
           "heading": "Step 1: Find your equivalent official",
