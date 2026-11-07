@@ -244,6 +244,20 @@
     }
   ],
 
+  "calendar": {
+    "week_starts": "monday",
+    "default_busy": [
+      { "start": "2026-12-24", "end": "2027-01-01", "label": "Winter holidays" }
+    ],
+    "default_busy_note": "Winter holidays are marked busy. Tap to change.",
+    "busy_rules": [
+      "Your own steps are never scheduled on a busy day or a past day.",
+      "Busy days don't count as progress for school steps (records and verification), so those steps start earlier."
+    ],
+    "source": "placeholder estimate",
+    "last_checked": "2026-11-07"
+  },
+
   "computer": {
     "requirement": "Use a reliable desktop or laptop computer with a stable internet connection.",
     "no_access_note": "You'll need a desktop or laptop for the challenges. Arrange one before your first challenge: ask your school's computer room, a public library, or a friend or relative.",

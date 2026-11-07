@@ -158,11 +158,66 @@
           el("label", {}, el("input", { type: "radio", name: "computer", value: "no" }), "No")),
         el("label", { class: "field" }, el("span", {}, "Hours per week you can spend"),
           el("input", { type: "number", name: "hours", min: "0.5", max: "40", step: "0.5", value: String(data.planning.default_hours_per_week), inputmode: "decimal" }))
+      ),
+      el("fieldset", { class: "cal-fieldset" },
+        el("legend", {}, "Tap the days you're busy"),
+        el("p", { class: "small muted", id: "cal-note" }),
+        el("p", { class: "cal-legend small muted", "aria-hidden": "true" },
+          el("span", { class: "sw sw-busy" }), "Busy ",
+          el("span", { class: "sw sw-today" }), "Today ",
+          el("span", { class: "sw sw-dl" }), "Deadline ",
+          el("span", { class: "sw-dot" }), "Step planned"),
+        el("div", { id: "cal" }),
+        el("div", { class: "cal-foot" },
+          el("span", { id: "cal-count", "aria-live": "polite" }),
+          el("button", { type: "button", class: "btn secondary", id: "cal-clear", onclick: () => {
+            state.busy.clear(); state.selected = null; state.info = "All busy days cleared."; update(data);
+          } }, "Clear all")),
+        el("p", { id: "cal-info", class: "cal-info", "aria-live": "polite" })
       )
     );
-    form.addEventListener("input", () => renderPlan(data));
-    form.addEventListener("change", () => renderPlan(data));
+    form.addEventListener("input", () => update(data));
+    form.addEventListener("change", () => update(data));
     form.addEventListener("submit", e => e.preventDefault());
+  }
+
+  // ---------- busy-days state (kept in memory, this tab only) ----------
+  const state = { busy: new Set(), selected: null, info: "", focus: null };
+  function iso(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function initBusy(data) {
+    const t = today();
+    for (const r of (data.calendar.default_busy || []))
+      for (let d = parseDate(r.start); d <= parseDate(r.end); d = addDays(d, 1))
+        if (d >= t) state.busy.add(iso(d));
+  }
+  function update(data) { renderPlan(data); }
+
+  // Schedules own steps backwards from the target date, only on free days from today on.
+  // Each free day holds (hours per week / 7) hours. A step short enough for one day stays on one day.
+  function scheduleOwn(remaining, hoursPerWeek, target, t) {
+    const cap = hoursPerWeek * 60 / 7;
+    const isBusy = d => state.busy.has(iso(d));
+    const prevFree = d => { do { d = addDays(d, -1); } while (d >= t && isBusy(d)); return d; };
+    let day = target;
+    while (day >= t && isBusy(day)) day = addDays(day, -1);
+    let left = cap;
+    const dayMap = new Map();
+    const scheduled = [];
+    for (let i = remaining.length - 1; i >= 0; i--) {
+      const s = remaining[i];
+      let m = s.minutes_max, startBy = null;
+      if (day >= t && m <= cap && left < m) { day = prevFree(day); left = cap; }
+      while (m > 0.001 && day >= t) {
+        if (left <= 0.001) { day = prevFree(day); left = cap; continue; }
+        const use = Math.min(m, left); m -= use; left -= use;
+        const k = iso(day);
+        if (!dayMap.has(k)) dayMap.set(k, []);
+        if (!dayMap.get(k).includes(s.name)) dayMap.get(k).unshift(s.name);
+        startBy = day;
+      }
+      scheduled.unshift({ step: s, startBy, late: m > 0.001 });
+    }
+    return { scheduled, dayMap, fits: scheduled.every(x => !x.late) };
   }
 
   function readForm() {
@@ -197,20 +252,18 @@
     const doneOwn = data.own_steps.filter(s => input.done.has(s.id));
     const minTotal = remaining.reduce((a, s) => a + s.minutes_min, 0);
     const maxTotal = remaining.reduce((a, s) => a + s.minutes_max, 0);
-    // Cumulative minutes counted back from the target date, so steps can share a day.
-    let cumMin = 0;
-    const scheduled = [];
-    for (let i = remaining.length - 1; i >= 0; i--) {
-      const s = remaining[i];
-      cumMin += s.minutes_max;
-      const start = addDays(target, -Math.ceil((cumMin / 60) / input.hours * 7));
-      scheduled.unshift({ step: s, startBy: start, late: start < t });
+    // Own steps never land on a busy day or a past day.
+    const sched = scheduleOwn(remaining, input.hours, target, t);
+    const scheduled = sched.scheduled;
+    const ownFits = sched.fits;
+    let freeDays = 0;
+    for (let d = t; d <= target; d = addDays(d, 1)) if (!state.busy.has(iso(d))) freeDays++;
+    const freeDaysNeeded = Math.ceil(maxTotal / (input.hours * 60 / 7));
+    let neededHours = null;
+    if (!ownFits && freeDays > 0) {
+      for (let h = Math.floor(input.hours * 2) / 2 + 0.5; h <= 40; h += 0.5)
+        if (scheduleOwn(remaining, h, target, t).fits) { neededHours = h; break; }
     }
-    const end = scheduled.length ? scheduled[0].startBy : target;
-    const ownDaysNeeded = daysBetween(end, target);
-    const ownFits = remaining.length === 0 || end >= t;
-    const daysAvailable = daysBetween(t, target);
-    const neededHours = daysAvailable > 0 ? (maxTotal / 60) / (daysAvailable / 7) : null;
 
     // Waiting steps, scheduled first.
     const waiting = [];
@@ -231,18 +284,25 @@
       if (status === "done") { waitingDone.push(w); continue; }
       const extra = w.school_dependent ? (school.extra_waiting_days || 0) : 0;
       const finishBy = addDays(w.deadline === "financial_aid" ? faDeadline : deadline, -buffer);
-      const startBy = addDays(finishBy, -(w.days_max + extra));
-      waiting.push({ step: w, status, extra, finishBy, startBy, late: status === "todo" && startBy < t });
+      // School steps: busy days (holidays etc.) don't count as progress, so skip them when counting back.
+      const need = w.days_max + extra;
+      let startBy = finishBy, counted = 0;
+      while (counted < need) {
+        startBy = addDays(startBy, -1);
+        if (!(w.school_dependent && state.busy.has(iso(startBy)))) counted++;
+      }
+      const skippedBusy = daysBetween(startBy, finishBy) - need;
+      waiting.push({ step: w, status, extra, finishBy, startBy, skippedBusy, late: status === "todo" && startBy < t });
     }
     waiting.sort((a, b) => a.startBy - b.startBy);
     const waitingFits = waiting.every(w => !w.late);
 
     const idx = rounds.indexOf(round);
     const nextRound = rounds[idx + 1] || null;
-    const firstChallenge = scheduled.find(x => x.step.needs_computer);
+    const firstChallenge = scheduled.find(x => x.step.needs_computer && x.startBy);
 
     return { t, round, school, buffer, deadline, faDeadline, target, remaining, doneOwn, minTotal, maxTotal,
-      scheduled, ownFits, ownDaysNeeded, daysAvailable, neededHours, waiting, waitingDone, waitingFits, nextRound, firstChallenge };
+      scheduled, dayMap: sched.dayMap, ownFits, freeDays, freeDaysNeeded, neededHours, waiting, waitingDone, waitingFits, nextRound, firstChallenge };
   }
 
   function renderPlan(data) {
@@ -264,10 +324,10 @@
     if (!p.ownFits || !p.waitingFits) {
       const lines = [el("strong", {}, "This plan doesn't fit before the deadline.")];
       if (!p.ownFits) {
-        lines.push(el("p", {}, "Your remaining work needs about " + p.ownDaysNeeded + " days at " + input.hours +
-          " hours a week, but there are " + Math.max(0, p.daysAvailable) + " days left (aiming to finish " + p.buffer + " days early)."));
-        if (p.neededHours && isFinite(p.neededHours) && p.neededHours <= 40)
-          lines.push(el("p", {}, "Try about " + Math.ceil(p.neededHours * 2) / 2 + " hours a week."));
+        lines.push(el("p", {}, "At " + input.hours + " hours a week your remaining work needs about " + p.freeDaysNeeded +
+          " free days, but there are " + p.freeDays + " free days left (not counting busy days, and aiming to finish " + p.buffer + " days early)."));
+        if (p.neededHours)
+          lines.push(el("p", {}, "Try about " + p.neededHours + " hours a week, or unmark some busy days."));
       }
       if (!p.waitingFits) {
         const late = p.waiting.filter(w => w.late).map(w => w.step.name.toLowerCase());
@@ -304,6 +364,7 @@
         ),
         el("p", { class: "step-tip" },
           "Can take about " + w.step.days_min + " to " + w.step.days_max + " days" + (w.extra ? " (+" + w.extra + " for your school type)" : "") +
+          (w.skippedBusy ? ", plus " + w.skippedBusy + " busy day" + (w.skippedBusy === 1 ? "" : "s") + " that don't count" : "") +
           ". Finish by " + fmtShort(w.finishBy) + (w.step.deadline === "financial_aid" ? " (financial aid deadline)" : "") + ". " + w.step.tip + " ",
           "Time: ", sourceLink(w.step.source), ". Requirement: ", sourceLink(w.step.requirement_source), ".")
       ))));
@@ -313,13 +374,13 @@
 
     // Own work checklist
     kids.push(el("h2", {}, "Your checklist"));
-    kids.push(el("p", { class: "muted small" }, "Counted back from the deadline, in the order Minerva describes. Time estimates are Minerva's (",
+    kids.push(el("p", { class: "muted small" }, "Counted back from the deadline, in the order Minerva describes, skipping your busy days. Time estimates are Minerva's (",
       el("a", { href: data.cycle.source, target: "_blank", rel: "noopener" }, "source"), ")."));
     if (p.scheduled.length) {
       kids.push(el("ol", { class: "steps" }, p.scheduled.map(x => el("li", {},
         el("div", { class: "step-top" },
           el("span", { class: "step-name" }, x.step.needs_computer ? el("span", { class: "tag" }, "Computer") : null, x.step.name),
-          el("span", { class: "date" + (x.late ? " late" : "") }, x.late ? "Start today" : "Start by " + fmtShort(x.startBy))
+          el("span", { class: "date" + (x.late ? " late" : "") }, x.late ? "Start today, doesn't fit" : "Start by " + fmtShort(x.startBy))
         ),
         el("p", { class: "step-tip" }, "About " + (x.step.minutes_min === x.step.minutes_max ? x.step.minutes_max : x.step.minutes_min + " to " + x.step.minutes_max) + " minutes. " + x.step.tip)
       ))));
@@ -344,6 +405,88 @@
     ));
 
     out.replaceChildren(...kids);
+    renderCalendar(data, p, input);
+  }
+
+  // ---------- busy-days calendar ----------
+  function renderCalendar(data, p, input) {
+    const box = document.getElementById("cal");
+    if (!box) return;
+    const t = p.t;
+    const showAid = input.finaid !== "not-needed";
+    const end = showAid && p.faDeadline > p.deadline ? p.faDeadline : p.deadline;
+    const months = [];
+    for (let m = new Date(t.getFullYear(), t.getMonth(), 1); m <= end; m = new Date(m.getFullYear(), m.getMonth() + 1, 1)) months.push(m);
+    const wd = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const long = d => d.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+
+    const monthEls = months.map(m => {
+      const cells = wd.map(w => el("div", { class: "cal-wd", "aria-hidden": "true" }, w));
+      const offset = (m.getDay() + 6) % 7; // Monday first
+      for (let i = 0; i < offset; i++) cells.push(el("div", { class: "cal-empty", "aria-hidden": "true" }));
+      for (let d = new Date(m); d.getMonth() === m.getMonth(); d = addDays(d, 1)) {
+        const day = new Date(d);
+        const k = iso(day);
+        const past = day < t, after = day > end;
+        const isToday = +day === +t;
+        const isDl = +day === +p.deadline, isAid = showAid && +day === +p.faDeadline;
+        const busy = state.busy.has(k);
+        const steps = !past ? p.dayMap.get(k) : null;
+        const cls = ["cal-day", past && "past", after && "after", isToday && "today", (isDl || isAid) && "deadline",
+          busy && !past && "busy", steps && "has-step", state.selected === k && "selected"].filter(Boolean).join(" ");
+        let label = long(day);
+        if (past) label += ", past";
+        else if (after) label += ", after your deadline";
+        else label += busy ? ", busy" : ", free";
+        if (isToday) label += ", today";
+        if (isDl) label += ", deadline";
+        if (isAid) label += ", aid deadline";
+        if (steps) label += ", planned: " + steps.join(", ");
+        const tappable = !past && !after;
+        cells.push(el("button", {
+          type: "button", class: cls, "data-date": k, "aria-label": label,
+          "aria-pressed": tappable ? String(busy) : null, disabled: !tappable,
+          onclick: tappable ? () => {
+            if (steps && !busy && state.selected !== k) {
+              state.selected = k;
+              state.info = fmtShort(day) + ": " + steps.join(", ") + ". Tap again to mark this day busy.";
+            } else {
+              if (busy) state.busy.delete(k); else state.busy.add(k);
+              state.selected = null;
+              state.info = fmtShort(day) + (busy ? " is free again." : " marked busy.");
+            }
+            state.focus = k;
+            update(data);
+          } : null
+        },
+          el("span", { class: "num" }, String(day.getDate())),
+          isDl ? el("span", { class: "lbl" }, "Deadline") : null,
+          isAid ? el("span", { class: "lbl" }, "Aid deadline") : null,
+          steps ? el("span", { class: "dot", "aria-hidden": "true" }) : null
+        ));
+      }
+      return el("section", { class: "cal-month" },
+        el("h3", {}, m.toLocaleDateString("en-US", { month: "long", year: "numeric" })),
+        el("div", { class: "cal-grid" }, cells));
+    });
+    box.replaceChildren(...monthEls);
+
+    // Holiday note, only when the default busy days fall inside the calendar.
+    const note = document.getElementById("cal-note");
+    const showsHoliday = (data.calendar.default_busy || []).some(r => parseDate(r.end) >= t && parseDate(r.start) <= end);
+    note.textContent = showsHoliday ? data.calendar.default_busy_note : "";
+    note.hidden = !showsHoliday;
+
+    const n = [...state.busy].filter(k => parseDate(k) >= t).length;
+    document.getElementById("cal-count").textContent = n + " busy day" + (n === 1 ? "" : "s") + " marked";
+    const info = document.getElementById("cal-info");
+    info.textContent = state.info || "Tap a day with a dot to see which step is planned.";
+
+    if (state.focus) {
+      const b = box.querySelector('[data-date="' + state.focus + '"]');
+      if (b) b.focus({ preventScroll: true });
+      state.focus = null;
+    }
   }
 
   // ---------- guides ----------
@@ -420,7 +563,7 @@
     data_default_hours = data.planning.default_hours_per_week;
     chrome(data, page);
     if (page === "start") renderStart(data);
-    if (page === "planner") { renderPlannerForm(data); renderPlan(data); }
+    if (page === "planner") { initBusy(data); renderPlannerForm(data); update(data); }
     if (page === "intl") renderGuideIntl(data);
     if (page === "local") renderGuideLocal(data);
   }
