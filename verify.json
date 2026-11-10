@@ -1,5 +1,5 @@
 {
-  "about": "Data for verify.html (Check the facts). Every answer must have at least one source. If there is no reliable source, status is \"no reliable source yet\". Sources with who_published \"independent\" are shown before sources from Minerva. Notes on how each item was checked are in VERIFY_NOTES.md.",
+  "about": "Data for verify.html (Check the facts). Every answer must have at least one source. If there is no reliable source, status is \"no reliable source yet\". Sources with who_published \"independent\" are shown before sources from Minerva. Optional fields: \"disagreement\" (shown right under the answer when official pages disagree) and \"note\" (shown under the source list). Notes on how each item was checked are in VERIFY_NOTES.md.",
   "items": [
     {
       "question": "Is Minerva accredited?",
@@ -22,8 +22,8 @@
     },
     {
       "question": "Is Minerva a real university or a scam?",
-      "answer": "Minerva is a real, accredited university. Its accreditor, WSCUC, lists it as a non-profit, and the U.S. government's College Navigator lists it as a 4-year, private not-for-profit school in San Francisco. College Navigator's own accreditation section is blank for Minerva, so use the WSCUC record to check accreditation.",
-      "note": "This page is not affiliated with Minerva. Check these sources yourself.",
+      "answer": "Minerva is a real, accredited university. Its accreditor, WSCUC, lists it as a non-profit, and the U.S. government's College Navigator lists it as a 4-year, private not-for-profit school in San Francisco.",
+      "note": "This page is not affiliated with Minerva. Check these sources yourself. If you check College Navigator, its accreditation section for Minerva is blank. The accreditor's own record, linked above, shows Minerva as accredited.",
       "status": "verified",
       "sources": [
         {
@@ -62,6 +62,7 @@
     {
       "question": "Where do students live?",
       "answer": "Students live together in Minerva residence halls and move to a new city each year. Both official pages name San Francisco for year 1 and Tokyo for year 2. For later years they differ: the Global Immersion page lists Buenos Aires for stop 3 and an unnamed European city for stop 4, while the Parents of Admits page says years 3 and 4 are to be announced.",
+      "disagreement": "Minerva's own pages don't agree on the year 3 city yet: one says Buenos Aires, another says 'To be announced'. We'll update this when they match.",
       "status": "partly verified",
       "sources": [
         {

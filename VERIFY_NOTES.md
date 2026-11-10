@@ -1,5 +1,8 @@
 # Check the facts: notes
 
+## Changes
+- **Nov 10, 2026 (update 2):** Only verify.html, verify.json and this file changed. (1) Q2: the College Navigator sentence moved out of the answer and into the Q2 note, worded plainly, with no guess about why the section is blank. The note now shows under the source list, so "linked above" is correct. (2) Q4: added a "Sources disagree" box under the answer (new optional field `disagreement`) saying the year 3 city doesn't match across Minerva's pages. Status stays "partly verified". (3) Added a "How we check" section above the cards. It's a real button with `aria-expanded` and starts closed. Checked at 375px: no sideways scrolling, no errors. The sources were not reopened for this update; they were last checked earlier today (Nov 10, 2026).
+
 ## Summary (Nov 10, 2026)
 
 **Done**
@@ -23,7 +26,7 @@
 - Cost: the financial aid page shows 2027/2028 numbers, but the Parents of Admits page still shows an older 2024-25 table. I used the financial aid page. See "Cost" below.
 - Cities: Global Immersion says year 3 is Buenos Aires; Parents of Admits says years 3 and 4 are "To be announced". The answer reports both.
 - The WSCUC action letter (Feb 2026) is dated in a confusing way (says the meeting was "February 13, 2025"). See "Accreditation" below.
-- College Navigator shows a blank accreditation section for Minerva. The answer to Q2 points people to the WSCUC record instead. A doubtful parent may notice this, so it's worth knowing.
+- College Navigator shows a blank accreditation section for Minerva. The Q2 note now says this plainly and points people to the WSCUC record. A doubtful parent may notice this, so it's worth knowing.
 - Q5 is the most sensitive answer (it mentions the accreditor's special visit). Read it once to make sure you're happy with the tone.
 
 ---
@@ -106,7 +109,8 @@ Choice: I named the year (2027/2028) in the answer and copied the numbers exactl
 ## Choices I made
 - **One page, no new CSS file.** `verify.html` uses the shared `planner.css` plus a small `<style>` block for the cards, so the existing pages' styles didn't change at all. The JavaScript is inline in `verify.html` and doesn't touch `planner.js`, except for one line.
 - **Menu:** the menu on the existing pages is built by `planner.js`, so I added one line there (`verify.html`, "Check facts"). `verify.html` has the same menu written straight into the HTML, so it works even if JavaScript fails. If you rename a menu item later, change it in both places. `index.html` was not touched, so the design-tokens block is safe.
-- **Extra field `note`** (only on Q2) holds "This page is not affiliated with Minerva. Check these sources yourself." I kept it out of the answer so the answer stays 2-3 sentences. It shows as a highlighted line in the card.
+- **Extra field `note`** (only on Q2) holds "This page is not affiliated with Minerva. Check these sources yourself." plus the College Navigator line. I kept it out of the answer so the answer stays 2-3 sentences. It shows as a highlighted box under the source list.
+- **Extra field `disagreement`** (only on Q4) shows as a yellow "Sources disagree" box right under the answer when official pages don't match.
 - **The "no answer without a source" rule is also in the code:** if an item has no valid http(s) source, the page shows it as "No reliable source yet", whatever its status says.
 - **Status meaning:** "verified" = every claim in the answer is shown directly on a linked page. Facts that only Minerva can state (its own prices, cities, class format) count as verified when Minerva's official page says them clearly and its pages agree. If its pages disagree, the status is "partly verified".
 - **Status badge is inside the card** (as asked), not on the closed card. Badges use text plus color, so they don't rely on color alone.

@@ -29,7 +29,17 @@
     .badge.verified { background: #e1eed3; color: #234010; border-color: #9fbf80; }
     .badge.partly { background: #fcecb3; color: #4a3600; border-color: #d9b440; }
     .badge.none { background: #e6e3df; color: #36322e; border-color: #b9b3ad; }
-    .fact-note { border-left: 4px solid var(--accent); background: var(--surface); padding: .6rem .8rem; border-radius: 0 8px 8px 0; font-weight: 600; margin: 0 0 .75rem; }
+    .fact-note { border-left: 4px solid var(--accent); background: var(--surface); padding: .6rem .8rem; border-radius: 0 8px 8px 0; font-weight: 600; margin: .75rem 0 0; }
+    .disagree { border: 1px solid #d9b440; border-left-width: 4px; background: #fdf6dc; color: #3d2d00; padding: .6rem .8rem; border-radius: 0 8px 8px 0; margin: 0 0 .75rem; }
+    .disagree strong { display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+    .how { margin: 1.25rem 0 0; background: var(--surface); }
+    .how .fact-toggle { font-family: var(--sans); font-size: 1rem; font-weight: 600; min-height: 48px; padding: .6rem 1rem; }
+    .how .fact-toggle:hover { background: var(--line); }
+    .how .fact-body { border-top-color: var(--line); }
+    .how ul { margin: .75rem 0 0; padding-left: 1.2rem; }
+    .how li { margin-bottom: .4rem; }
+    .how li:last-child { margin-bottom: 0; }
+    .how + .facts { margin-top: 1.25rem; }
     .evidence { font-size: .95rem; color: var(--muted); margin: 0 0 .5rem; }
     .fact h3 { font-family: var(--sans); font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 1rem 0 .4rem; }
     .sources { list-style: none; padding: 0; margin: 0; }
@@ -68,6 +78,16 @@
       <h1>Check the facts about Minerva</h1>
       <p class="lede">Every answer links to its source. If we can't find a reliable source, we say so.</p>
       <p class="muted small">Tap a question to see the answer, how sure we are, and the sources. Independent sources are listed first.</p>
+      <section class="fact how" aria-labelledby="how-btn">
+        <h2><button type="button" class="fact-toggle" id="how-btn" aria-expanded="false" aria-controls="how-panel"><span>How we check</span><span class="chev" aria-hidden="true"></span></button></h2>
+        <div class="fact-body" id="how-panel" role="region" aria-labelledby="how-btn" hidden>
+          <ul>
+            <li>We only use public sources: the accreditor, the U.S. government, and Minerva's own pages.</li>
+            <li>Independent sources are listed first, and Minerva's own pages are labeled.</li>
+            <li>When sources disagree or we can't find one, we say so.</li>
+          </ul>
+        </div>
+      </section>
       <ul class="facts" id="facts"><li class="muted">Loading…</li></ul>
       <p class="report">Spotted a mistake or an outdated source? <a id="report-link" href="https://github.com/lilaibikesha/Sourced/issues/new?title=Error%20on%20Check%20the%20facts&amp;body=Which%20question%3F%0A%0AWhat%20is%20wrong%3F%0A%0ALink%20to%20a%20source%20that%20shows%20the%20correct%20information%3A%0A" target="_blank" rel="noopener">Report an error<span class="vh"> (opens GitHub in a new tab)</span></a></p>
     </div>
@@ -106,6 +126,14 @@
       return n;
     }
 
+    function makeToggle(btn, panel) {
+      btn.addEventListener("click", function () {
+        var open = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", open ? "false" : "true");
+        panel.hidden = open;
+      });
+    }
+
     function isUrl(s) { return /^https?:\/\//.test(s || ""); }
 
     // "2026-11-10" -> "Nov 10, 2026" without time zone shifts.
@@ -132,7 +160,7 @@
       var panel = el("div", { class: "fact-body", id: id + "-panel", role: "region", "aria-labelledby": id + "-btn", hidden: true }, [
         el("p", {}, [el("span", { class: "badge " + status.cls }, [el("span", { class: "vh", text: "Status: " }), status.label])]),
         el("p", { class: "answer", text: item.answer }),
-        item.note ? el("p", { class: "fact-note", text: item.note }) : null,
+        item.disagreement ? el("p", { class: "disagree" }, [el("strong", { text: "Sources disagree" }), item.disagreement]) : null,
         item.evidence ? el("p", { class: "evidence" }, [el("strong", { text: "What the source shows: " }), item.evidence]) : null,
         el("h3", { text: ordered.length === 1 ? "Source" : "Sources" }),
         ordered.length
@@ -144,14 +172,11 @@
               ]);
             }))
           : el("p", { class: "muted", text: "No source yet." }),
+        item.note ? el("p", { class: "fact-note", text: item.note }) : null,
         el("p", { class: "checked", text: "Last checked: " + fmtDate(item.last_checked) })
       ]);
 
-      btn.addEventListener("click", function () {
-        var open = btn.getAttribute("aria-expanded") === "true";
-        btn.setAttribute("aria-expanded", open ? "false" : "true");
-        panel.hidden = open;
-      });
+      makeToggle(btn, panel);
 
       return el("li", { class: "fact", id: id }, [el("h2", {}, [btn]), panel]);
     }
@@ -162,6 +187,8 @@
       var btn = document.getElementById(m[1] + "-btn");
       if (btn && btn.getAttribute("aria-expanded") !== "true") btn.click();
     }
+
+    makeToggle(document.getElementById("how-btn"), document.getElementById("how-panel"));
 
     var list = document.getElementById("facts");
     fetch("verify.json", { cache: "no-cache" })
