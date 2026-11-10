@@ -1,0 +1,120 @@
+{
+  "about": "Data for verify.html (Check the facts). Every answer must have at least one source. If there is no reliable source, status is \"no reliable source yet\". Sources with who_published \"independent\" are shown before sources from Minerva. Notes on how each item was checked are in VERIFY_NOTES.md.",
+  "items": [
+    {
+      "question": "Is Minerva accredited?",
+      "answer": "Yes. Minerva University is accredited by the WASC Senior College and University Commission (WSCUC). The accreditor's own record lists its status as Accredited, first accredited in 2021, with the most recent decision on February 13, 2026.",
+      "status": "verified",
+      "sources": [
+        {
+          "title": "WSCUC institution record: Minerva University",
+          "url": "https://www.wscuc.org/institutions/minerva-university/",
+          "who_published": "independent"
+        },
+        {
+          "title": "Accreditation at Minerva University",
+          "url": "https://www.minerva.edu/accreditation/",
+          "who_published": "Minerva"
+        }
+      ],
+      "evidence": "The accreditor's directory entry for Minerva shows the status Accredited, a first accreditation year of 2021 and a latest Commission action dated February 13, 2026.",
+      "last_checked": "2026-11-10"
+    },
+    {
+      "question": "Is Minerva a real university or a scam?",
+      "answer": "Minerva is a real, accredited university. Its accreditor, WSCUC, lists it as a non-profit, and the U.S. government's College Navigator lists it as a 4-year, private not-for-profit school in San Francisco. College Navigator's own accreditation section is blank for Minerva, so use the WSCUC record to check accreditation.",
+      "note": "This page is not affiliated with Minerva. Check these sources yourself.",
+      "status": "verified",
+      "sources": [
+        {
+          "title": "WSCUC institution record: Minerva University",
+          "url": "https://www.wscuc.org/institutions/minerva-university/",
+          "who_published": "independent"
+        },
+        {
+          "title": "College Navigator (U.S. Department of Education, NCES): Minerva University",
+          "url": "https://nces.ed.gov/collegenavigator/?id=484844",
+          "who_published": "independent"
+        }
+      ],
+      "evidence": "WSCUC's record shows Accredited and a Non-Profit financial structure, and College Navigator's entry for Minerva University (ID 484844) shows a 4-year, private not-for-profit institution.",
+      "last_checked": "2026-11-10"
+    },
+    {
+      "question": "How much does Minerva cost?",
+      "answer": "For the 2027/2028 academic year, Minerva's financial aid page lists: Tuition and Program Fee $31,300, Residential Services Fee $19,900, Student Services Fee $2,800 and Estimated Living Costs $5,600 (not paid to Minerva, includes $600 set-up costs), for a total of $59,600. Travel between cities, visas, a laptop, health insurance and personal costs come on top of that. Minerva says it does not take part in U.S. Title IV federal aid, so Pell Grants and federal loans can't be used, but it offers its own need-based aid.",
+      "status": "verified",
+      "sources": [
+        {
+          "title": "College Navigator (U.S. Department of Education, NCES): Minerva University, Federal Aid",
+          "url": "https://nces.ed.gov/collegenavigator/?id=484844",
+          "who_published": "independent"
+        },
+        {
+          "title": "Minerva Tuition & Financial Aid",
+          "url": "https://www.minerva.edu/undergraduate/financial-aid/",
+          "who_published": "Minerva"
+        }
+      ],
+      "evidence": "Minerva's financial aid page has a cost table labeled for the 2027/2028 academic year and a statement that it does not participate in Title IV aid, and College Navigator separately says Minerva students cannot receive federal aid.",
+      "last_checked": "2026-11-10"
+    },
+    {
+      "question": "Where do students live?",
+      "answer": "Students live together in Minerva residence halls and move to a new city each year. Both official pages name San Francisco for year 1 and Tokyo for year 2. For later years they differ: the Global Immersion page lists Buenos Aires for stop 3 and an unnamed European city for stop 4, while the Parents of Admits page says years 3 and 4 are to be announced.",
+      "status": "partly verified",
+      "sources": [
+        {
+          "title": "Minerva Global Immersion",
+          "url": "https://www.minerva.edu/global-immersion/",
+          "who_published": "Minerva"
+        },
+        {
+          "title": "Minerva for Parents of Admits: The Global Rotation",
+          "url": "https://www.minerva.edu/parents-of-admits/",
+          "who_published": "Minerva"
+        }
+      ],
+      "evidence": "Both Minerva pages show San Francisco as year 1 and Tokyo as year 2, but they disagree on year 3 (Buenos Aires vs. to be announced), and neither names the year 4 city.",
+      "last_checked": "2026-11-10"
+    },
+    {
+      "question": "What should I know before applying?",
+      "answer": "Minerva is a young school: its accreditor first accredited it in 2021. Classes are live online seminars of about 20 students on Minerva's own platform, taken while you live in a residence hall, not in a lecture hall. In December 2025 the accreditor made a special visit that looked at areas including Minerva's finances and cost of attendance; in February 2026 it kept Minerva accredited, asked it to keep strengthening its finances, and set the next full review for fall 2027 and spring 2028.",
+      "status": "verified",
+      "sources": [
+        {
+          "title": "WSCUC institution record: Minerva University (see the Reviews tab)",
+          "url": "https://www.wscuc.org/institutions/minerva-university/",
+          "who_published": "independent"
+        },
+        {
+          "title": "WSCUC Commission Action Letter, Special Visit, February 2026 action (PDF)",
+          "url": "https://wascsenior.box.com/s/y4h2aluakd9lf5ihwvbgbzxxnrtxc152",
+          "who_published": "independent"
+        },
+        {
+          "title": "Minerva for Parents of Admits: Academics and A Day in the Life",
+          "url": "https://www.minerva.edu/parents-of-admits/",
+          "who_published": "Minerva"
+        }
+      ],
+      "evidence": "WSCUC lists first accreditation in 2021 and upcoming reviews in fall 2027 and spring 2028, its February 2026 letter names the five areas the special visit examined, and Minerva's parents page describes classes as live seminars of about 20 students on a virtual platform.",
+      "last_checked": "2026-11-10"
+    },
+    {
+      "question": "How do employers view a Minerva degree?",
+      "answer": "We haven't found an independent source for this yet. Minerva publishes its own outcome numbers, but we're looking for a source that isn't the school.",
+      "status": "no reliable source yet",
+      "sources": [
+        {
+          "title": "Minerva Student Impact (Minerva's own outcome numbers)",
+          "url": "https://www.minerva.edu/student-impact/",
+          "who_published": "Minerva"
+        }
+      ],
+      "evidence": "Minerva's Student Impact page reports its own graduate outcome figures; we found no independent source on how employers view the degree.",
+      "last_checked": "2026-11-10"
+    }
+  ]
+}

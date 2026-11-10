@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Check the facts | Application Planner</title>
+  <meta name="description" content="Common questions about Minerva University, each answered with a link to the source. Independent student project. Not affiliated with Minerva University.">
+  <meta name="theme-color" content="#f9f8f6">
+  <link rel="stylesheet" href="planner.css">
+  <style>
+    /* Check the facts: page-only styles. Shared look comes from planner.css. */
+    .facts { list-style: none; padding: 0; margin: 1.75rem 0 0; }
+    .fact { background: #fff; border: 1px solid var(--line); border-radius: 12px; margin-bottom: .75rem; }
+    .fact h2 { margin: 0; padding: 0; border: 0; font-size: 1.15rem; }
+    .fact-toggle {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      width: 100%; min-height: 56px; padding: .9rem 1rem; margin: 0;
+      background: transparent; border: 0; border-radius: 12px; cursor: pointer;
+      font: inherit; font-family: var(--serif); font-size: 1.15rem; line-height: 1.3; color: var(--text); text-align: left;
+    }
+    .fact-toggle:hover { background: var(--surface); }
+    .fact-toggle .chev { flex: none; width: .7rem; height: .7rem; border-right: 2px solid var(--text); border-bottom: 2px solid var(--text); transform: rotate(45deg); margin: -.3rem .25rem 0 0; transition: transform .15s; }
+    .fact-toggle[aria-expanded="true"] .chev { transform: rotate(-135deg); margin-top: .3rem; }
+    .fact-toggle[aria-expanded="true"] { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+    .fact-body { padding: .25rem 1rem 1rem; border-top: 1px solid var(--surface); }
+    .fact-body[hidden] { display: none; }
+    .fact-body .answer { margin: .75rem 0 .75rem; }
+    .badge { display: inline-block; font-size: .85rem; font-weight: 700; padding: .2rem .7rem; border-radius: 999px; border: 1px solid transparent; margin: .75rem 0 0; }
+    .badge.verified { background: #e1eed3; color: #234010; border-color: #9fbf80; }
+    .badge.partly { background: #fcecb3; color: #4a3600; border-color: #d9b440; }
+    .badge.none { background: #e6e3df; color: #36322e; border-color: #b9b3ad; }
+    .fact-note { border-left: 4px solid var(--accent); background: var(--surface); padding: .6rem .8rem; border-radius: 0 8px 8px 0; font-weight: 600; margin: 0 0 .75rem; }
+    .evidence { font-size: .95rem; color: var(--muted); margin: 0 0 .5rem; }
+    .fact h3 { font-family: var(--sans); font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 1rem 0 .4rem; }
+    .sources { list-style: none; padding: 0; margin: 0; }
+    .sources li { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .5rem; padding: .45rem 0; border-bottom: 1px solid var(--surface); }
+    .sources li:last-child { border-bottom: 0; }
+    .sources a { min-height: 44px; display: inline-flex; align-items: center; }
+    .who { flex: none; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: .1rem .5rem; border-radius: 999px; }
+    .who.independent { background: var(--text); color: var(--bg); }
+    .who.minerva { background: var(--surface); color: var(--text); border: 1px solid var(--line); }
+    .checked { font-size: .9rem; color: var(--muted); margin: .75rem 0 0; }
+    .report { margin-top: 2rem; }
+    .vh { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  </style>
+</head>
+<body data-page="verify">
+  <header id="site-header">
+    <div class="topbar">
+      <div class="wrap">
+        <a class="brand" href="index.html">Application Planner</a>
+        <nav class="topnav" aria-label="Pages">
+          <a href="index.html">Start</a>
+          <a href="planner.html">Planner</a>
+          <a href="guide-international-school.html">International school guide</a>
+          <a href="guide-us-school.html">US school guide</a>
+          <a href="guide-local-school.html">Local school guide</a>
+          <a href="verify.html" aria-current="page">Check facts</a>
+        </nav>
+      </div>
+    </div>
+    <div class="disclaimer" role="note">
+      <div class="wrap"><strong>Independent student project. Not affiliated with Minerva University.</strong></div>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <h1>Check the facts about Minerva</h1>
+      <p class="lede">Every answer links to its source. If we can't find a reliable source, we say so.</p>
+      <p class="muted small">Tap a question to see the answer, how sure we are, and the sources. Independent sources are listed first.</p>
+      <ul class="facts" id="facts"><li class="muted">Loading…</li></ul>
+      <p class="report">Spotted a mistake or an outdated source? <a id="report-link" href="https://github.com/lilaibikesha/Sourced/issues/new?title=Error%20on%20Check%20the%20facts&amp;body=Which%20question%3F%0A%0AWhat%20is%20wrong%3F%0A%0ALink%20to%20a%20source%20that%20shows%20the%20correct%20information%3A%0A" target="_blank" rel="noopener">Report an error<span class="vh"> (opens GitHub in a new tab)</span></a></p>
+    </div>
+  </main>
+  <footer id="site-footer">
+    <div class="wrap">
+      <p><strong id="footer-checked">Last checked: Nov 10, 2026</strong></p>
+      <p class="small">All answers and sources on this page come from <a href="verify.json">verify.json</a>. Always check the source yourself.</p>
+      <p class="small">Independent student project. Not affiliated with Minerva University.</p>
+    </div>
+  </footer>
+  <noscript><div class="wrap"><p>This page needs JavaScript to show the answers. You can read all answers and sources directly in <a href="verify.json">verify.json</a>.</p></div></noscript>
+  <script>
+  (function () {
+    "use strict";
+
+    var STATUS = {
+      "verified": { label: "Verified", cls: "verified" },
+      "partly verified": { label: "Partly verified", cls: "partly" },
+      "no reliable source yet": { label: "No reliable source yet", cls: "none" }
+    };
+
+    function el(tag, attrs, kids) {
+      var n = document.createElement(tag);
+      Object.keys(attrs || {}).forEach(function (k) {
+        var v = attrs[k];
+        if (v === null || v === undefined || v === false) return;
+        if (k === "class") n.className = v;
+        else if (k === "text") n.textContent = v;
+        else n.setAttribute(k, v === true ? "" : v);
+      });
+      (kids || []).forEach(function (kid) {
+        if (kid === null || kid === undefined || kid === false) return;
+        n.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+      });
+      return n;
+    }
+
+    function isUrl(s) { return /^https?:\/\//.test(s || ""); }
+
+    // "2026-11-10" -> "Nov 10, 2026" without time zone shifts.
+    function fmtDate(iso) {
+      var p = String(iso || "").split("-").map(Number);
+      if (p.length !== 3 || p.some(isNaN)) return iso || "unknown";
+      return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function renderItem(item, i) {
+      var id = "fact-" + (i + 1);
+      // Main rule: no answer without a source.
+      var sources = (item.sources || []).filter(function (s) { return isUrl(s.url); });
+      var statusKey = sources.length ? item.status : "no reliable source yet";
+      var status = STATUS[statusKey] || STATUS["no reliable source yet"];
+
+      // Independent sources first, then Minerva's own (order kept within each group).
+      var ordered = sources.filter(function (s) { return s.who_published === "independent"; })
+        .concat(sources.filter(function (s) { return s.who_published !== "independent"; }));
+
+      var btn = el("button", { type: "button", class: "fact-toggle", id: id + "-btn", "aria-expanded": "false", "aria-controls": id + "-panel" },
+        [el("span", { text: item.question }), el("span", { class: "chev", "aria-hidden": "true" })]);
+
+      var panel = el("div", { class: "fact-body", id: id + "-panel", role: "region", "aria-labelledby": id + "-btn", hidden: true }, [
+        el("p", {}, [el("span", { class: "badge " + status.cls }, [el("span", { class: "vh", text: "Status: " }), status.label])]),
+        el("p", { class: "answer", text: item.answer }),
+        item.note ? el("p", { class: "fact-note", text: item.note }) : null,
+        item.evidence ? el("p", { class: "evidence" }, [el("strong", { text: "What the source shows: " }), item.evidence]) : null,
+        el("h3", { text: ordered.length === 1 ? "Source" : "Sources" }),
+        ordered.length
+          ? el("ul", { class: "sources" }, ordered.map(function (s) {
+              var indep = s.who_published === "independent";
+              return el("li", {}, [
+                el("span", { class: "who " + (indep ? "independent" : "minerva"), text: indep ? "Independent" : "From Minerva" }),
+                el("a", { href: s.url, target: "_blank", rel: "noopener" }, [s.title || s.url, el("span", { class: "vh", text: " (opens in a new tab)" })])
+              ]);
+            }))
+          : el("p", { class: "muted", text: "No source yet." }),
+        el("p", { class: "checked", text: "Last checked: " + fmtDate(item.last_checked) })
+      ]);
+
+      btn.addEventListener("click", function () {
+        var open = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", open ? "false" : "true");
+        panel.hidden = open;
+      });
+
+      return el("li", { class: "fact", id: id }, [el("h2", {}, [btn]), panel]);
+    }
+
+    function openFromHash() {
+      var m = /^#(fact-\d+)$/.exec(location.hash);
+      if (!m) return;
+      var btn = document.getElementById(m[1] + "-btn");
+      if (btn && btn.getAttribute("aria-expanded") !== "true") btn.click();
+    }
+
+    var list = document.getElementById("facts");
+    fetch("verify.json", { cache: "no-cache" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (data) {
+        var items = data.items || [];
+        list.replaceChildren.apply(list, items.map(renderItem));
+        var dates = items.map(function (it) { return it.last_checked; }).filter(Boolean).sort();
+        if (dates.length) document.getElementById("footer-checked").textContent = "Last checked: " + fmtDate(dates[dates.length - 1]);
+        openFromHash();
+      })
+      .catch(function () {
+        list.replaceChildren(el("li", {}, ["Couldn't load the answers. Please reload the page, or read them in ", el("a", { href: "verify.json", text: "verify.json" }), "."]));
+      });
+    window.addEventListener("hashchange", openFromHash);
+  })();
+  </script>
+</body>
+</html>

@@ -48,7 +48,8 @@
       ["planner.html", "Planner", "planner"],
       ["guide-international-school.html", "International school guide", "intl"],
       ["guide-us-school.html", "US school guide", "us"],
-      ["guide-local-school.html", "Local school guide", "local"]
+      ["guide-local-school.html", "Local school guide", "local"],
+      ["verify.html", "Check facts", "verify"]
     ];
     const header = document.getElementById("site-header");
     header.replaceChildren(
