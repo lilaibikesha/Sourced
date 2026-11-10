@@ -1,6 +1,12 @@
 # Check the facts: notes
 
 ## Changes
+- **Nov 10, 2026 (update 3, content fix):** Only verify.json and this file changed. Before each change I reopened the source page (Nov 10, 2026). last_checked stays 2026-11-10 for every item, and every answer is 3 sentences or fewer.
+  - **Q4, done.** Global Immersion still shows "STOP 4: A European City" without naming it (it only says past cities include Berlin and London). Answer, `disagreement` and evidence now all say it the same way: "a European city it doesn't name yet". The disagreement box now covers year 4 too. Status stays "partly verified".
+  - **Q5, done.** Parents of Admits says "every Minerva class is a live, interactive seminar with no more than 20 students", so "about 20" is now "up to 20" (evidence updated too). Heads-up: other official wording differs. The FAQ on the same page says "capped at roughly 20", and the general FAQ (minerva.edu/faqs) says "fewer than 23 students". I didn't add that to the page.
+  - **Q3, partly done.** Added: "An older Minerva page still shows 2024-25 costs, so make sure you're looking at the year you'll apply for." I added the Parents of Admits page as a Minerva source for that sentence, since it still shows the 2024-25 table. **Skipped: removing "health insurance" from the extra costs.** Parents of Admits does say all students are enrolled in Minerva's international health insurance plan. But being enrolled doesn't mean it's paid for: the financial aid page (the main Q3 source) lists Health Insurance at "$700–$800 per semester" under costs to plan for, and minerva.edu/faqs says students pay "for flights, visas, taxes, and health insurance" in addition to the EFC and lists insurance among costs that "are additional". Removing it would make the answer wrong, so I kept it. To stay at 3 sentences, I merged the extra-costs and Title IV sentences into one.
+  - **Q2, done.** minerva.edu/faqs answers "Is there an application fee?" with no application fee. I added your sentence to the answer and the FAQ as a source labeled "From Minerva" (URL https://www.minerva.edu/faqs/, where the link ends up after the redirect). Evidence updated. The answer is now 3 sentences.
+  - Checked at 375px: page loads, no errors, no sideways scrolling.
 - **Nov 10, 2026 (update 2):** Only verify.html, verify.json and this file changed. (1) Q2: the College Navigator sentence moved out of the answer and into the Q2 note, worded plainly, with no guess about why the section is blank. The note now shows under the source list, so "linked above" is correct. (2) Q4: added a "Sources disagree" box under the answer (new optional field `disagreement`) saying the year 3 city doesn't match across Minerva's pages. Status stays "partly verified". (3) Added a "How we check" section above the cards. It's a real button with `aria-expanded` and starts closed. Checked at 375px: no sideways scrolling, no errors. The sources were not reopened for this update; they were last checked earlier today (Nov 10, 2026).
 
 ## Summary (Nov 10, 2026)
@@ -42,6 +48,7 @@
 | https://www.minerva.edu/global-immersion (redirects to .../global-immersion/) | Yes | Q4 |
 | https://www.minerva.edu/parents-of-admits (redirects to .../parents-of-admits/) | Yes | Q4, Q5 |
 | https://wascsenior.box.com/s/y4h2aluakd9lf5ihwvbgbzxxnrtxc152 (WSCUC Commission Action Letter, Special Visit, Feb 2026) | Yes | Q5. **Extra source**, not on your list. It is the accreditor's own letter, linked from the WSCUC record page. |
+| https://www.minerva.edu/faqs/ | Yes (added in update 3) | Q2 (no application fee). Minerva's own FAQ, labeled "From Minerva". |
 | https://www.minerva.edu/student-impact/ | Yes | Q6. **Extra source**: Minerva's outcomes page, found from the "Explore Student Outcomes" link on minerva.edu. Labeled "From Minerva". |
 | https://www.minerva.edu/undergraduate/required-financial-information/ | Yes | Not used on the page, only to cross-check costs (see below). |
 
@@ -97,7 +104,7 @@ Choice: I named the year (2027/2028) in the answer and copied the numbers exactl
 
 ### What to know before applying (Q5)
 - "Young school": WSCUC First Accredited 2021.
-- "Live online seminars": Parents of Admits page says every class is a live, interactive seminar with no more than 20 students, run on Minerva's virtual learning platform, and students live together while taking these classes. I wrote "about 20" because the FAQ on the same page says "capped at roughly 20" while the Academics section says "no more than 20".
+- "Live online seminars": Parents of Admits page says every class is a live, interactive seminar with no more than 20 students, run on Minerva's virtual learning platform, and students live together while taking these classes. The answer first said "about 20" because the FAQ on the same page says "capped at roughly 20" while the Academics section says "no more than 20". In update 3 it changed to "up to 20" (see Changes).
 - Reviews: from the WSCUC record and the Feb 2026 letter (see above).
 - Marked **verified**: each part has a source that says it directly.
 

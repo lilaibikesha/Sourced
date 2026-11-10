@@ -22,7 +22,7 @@
     },
     {
       "question": "Is Minerva a real university or a scam?",
-      "answer": "Minerva is a real, accredited university. Its accreditor, WSCUC, lists it as a non-profit, and the U.S. government's College Navigator lists it as a 4-year, private not-for-profit school in San Francisco.",
+      "answer": "Minerva is a real, accredited university. Its accreditor, WSCUC, lists it as a non-profit, and the U.S. government's College Navigator lists it as a 4-year, private not-for-profit school in San Francisco. Minerva does not charge an application fee, so be careful with anyone asking you to pay to apply.",
       "note": "This page is not affiliated with Minerva. Check these sources yourself. If you check College Navigator, its accreditation section for Minerva is blank. The accreditor's own record, linked above, shows Minerva as accredited.",
       "status": "verified",
       "sources": [
@@ -35,14 +35,19 @@
           "title": "College Navigator (U.S. Department of Education, NCES): Minerva University",
           "url": "https://nces.ed.gov/collegenavigator/?id=484844",
           "who_published": "independent"
+        },
+        {
+          "title": "Minerva FAQs: Is there an application fee?",
+          "url": "https://www.minerva.edu/faqs/",
+          "who_published": "Minerva"
         }
       ],
-      "evidence": "WSCUC's record shows Accredited and a Non-Profit financial structure, and College Navigator's entry for Minerva University (ID 484844) shows a 4-year, private not-for-profit institution.",
+      "evidence": "WSCUC's record shows Accredited and a Non-Profit financial structure, College Navigator's entry for Minerva University (ID 484844) shows a 4-year, private not-for-profit institution, and Minerva's FAQ says there is no application fee.",
       "last_checked": "2026-11-10"
     },
     {
       "question": "How much does Minerva cost?",
-      "answer": "For the 2027/2028 academic year, Minerva's financial aid page lists: Tuition and Program Fee $31,300, Residential Services Fee $19,900, Student Services Fee $2,800 and Estimated Living Costs $5,600 (not paid to Minerva, includes $600 set-up costs), for a total of $59,600. Travel between cities, visas, a laptop, health insurance and personal costs come on top of that. Minerva says it does not take part in U.S. Title IV federal aid, so Pell Grants and federal loans can't be used, but it offers its own need-based aid.",
+      "answer": "For the 2027/2028 academic year, Minerva's financial aid page lists: Tuition and Program Fee $31,300, Residential Services Fee $19,900, Student Services Fee $2,800 and Estimated Living Costs $5,600 (not paid to Minerva, includes $600 set-up costs), for a total of $59,600. Travel between cities, visas, a laptop, health insurance and personal costs come on top, and U.S. federal (Title IV) aid such as Pell Grants and federal loans can't be used, but Minerva offers its own need-based aid. An older Minerva page still shows 2024-25 costs, so make sure you're looking at the year you'll apply for.",
       "status": "verified",
       "sources": [
         {
@@ -54,15 +59,20 @@
           "title": "Minerva Tuition & Financial Aid",
           "url": "https://www.minerva.edu/undergraduate/financial-aid/",
           "who_published": "Minerva"
+        },
+        {
+          "title": "Minerva for Parents of Admits: Tuition and Financial Aid (older page, shows 2024-25 costs)",
+          "url": "https://www.minerva.edu/parents-of-admits/",
+          "who_published": "Minerva"
         }
       ],
-      "evidence": "Minerva's financial aid page has a cost table labeled for the 2027/2028 academic year and a statement that it does not participate in Title IV aid, and College Navigator separately says Minerva students cannot receive federal aid.",
+      "evidence": "Minerva's financial aid page has a cost table for the 2027/2028 academic year and says it does not participate in Title IV aid, its Parents of Admits page still shows a 2024-25 table, and College Navigator separately says Minerva students cannot receive federal aid.",
       "last_checked": "2026-11-10"
     },
     {
       "question": "Where do students live?",
-      "answer": "Students live together in Minerva residence halls and move to a new city each year. Both official pages name San Francisco for year 1 and Tokyo for year 2. For later years they differ: the Global Immersion page lists Buenos Aires for stop 3 and an unnamed European city for stop 4, while the Parents of Admits page says years 3 and 4 are to be announced.",
-      "disagreement": "Minerva's own pages don't agree on the year 3 city yet: one says Buenos Aires, another says 'To be announced'. We'll update this when they match.",
+      "answer": "Students live together in Minerva residence halls and move to a new city each year. Both official pages name San Francisco for year 1 and Tokyo for year 2. For later years they differ: the Global Immersion page says Buenos Aires for year 3 and a European city it doesn't name yet for year 4, while the Parents of Admits page says years 3 and 4 are 'To be announced'.",
+      "disagreement": "Minerva's own pages don't agree on the year 3 city yet: one says Buenos Aires, another says 'To be announced'. For year 4, one says a European city it doesn't name yet, the other says 'To be announced'. We'll update this when they match.",
       "status": "partly verified",
       "sources": [
         {
@@ -76,12 +86,12 @@
           "who_published": "Minerva"
         }
       ],
-      "evidence": "Both Minerva pages show San Francisco as year 1 and Tokyo as year 2, but they disagree on year 3 (Buenos Aires vs. to be announced), and neither names the year 4 city.",
+      "evidence": "Both Minerva pages show San Francisco for year 1 and Tokyo for year 2; for year 3 one says Buenos Aires and the other 'To be announced', and for year 4 one says a European city it doesn't name yet and the other 'To be announced'.",
       "last_checked": "2026-11-10"
     },
     {
       "question": "What should I know before applying?",
-      "answer": "Minerva is a young school: its accreditor first accredited it in 2021. Classes are live online seminars of about 20 students on Minerva's own platform, taken while you live in a residence hall, not in a lecture hall. In December 2025 the accreditor made a special visit that looked at areas including Minerva's finances and cost of attendance; in February 2026 it kept Minerva accredited, asked it to keep strengthening its finances, and set the next full review for fall 2027 and spring 2028.",
+      "answer": "Minerva is a young school: its accreditor first accredited it in 2021. Classes are live online seminars of up to 20 students on Minerva's own platform, taken while you live in a residence hall, not in a lecture hall. In December 2025 the accreditor made a special visit that looked at areas including Minerva's finances and cost of attendance; in February 2026 it kept Minerva accredited, asked it to keep strengthening its finances, and set the next full review for fall 2027 and spring 2028.",
       "status": "verified",
       "sources": [
         {
@@ -100,7 +110,7 @@
           "who_published": "Minerva"
         }
       ],
-      "evidence": "WSCUC lists first accreditation in 2021 and upcoming reviews in fall 2027 and spring 2028, its February 2026 letter names the five areas the special visit examined, and Minerva's parents page describes classes as live seminars of about 20 students on a virtual platform.",
+      "evidence": "WSCUC lists first accreditation in 2021 and upcoming reviews in fall 2027 and spring 2028, its February 2026 letter names the five areas the special visit examined, and Minerva's parents page describes classes as live seminars of no more than 20 students on a virtual platform.",
       "last_checked": "2026-11-10"
     },
     {
