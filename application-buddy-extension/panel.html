@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Application Buddy</title>
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <aside class="panel" id="buddyPanel" aria-label="Application Buddy">
+    <!-- Thin top bar, like Chrome's side panel -->
+    <div class="panel-bar">
+      <svg class="logo" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1e40af"/><path d="M5.8 10.4l2.7 2.7 5.7-6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Application Buddy</span>
+      <button class="x" id="closeBtn" type="button" aria-label="Close panel" title="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 2.5l9 9M11.5 2.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Two tabs -->
+    <div class="tabs" role="tablist" aria-label="Buddy sections">
+      <button class="tab" type="button" role="tab" id="tabBtnProgress" aria-controls="tabProgress" aria-selected="true" tabindex="0">My progress</button>
+      <button class="tab" type="button" role="tab" id="tabBtnTrust" aria-controls="tabTrust" aria-selected="false" tabindex="-1">Can I trust this?</button>
+    </div>
+
+    <div class="panel-body">
+
+      <!-- ============ TAB 1: MY PROGRESS ============ -->
+      <section class="tab-panel" id="tabProgress" role="tabpanel" aria-labelledby="tabBtnProgress">
+
+        <!-- 1. Progress bar -->
+        <div class="block">
+          <div class="progress-head">
+            <span id="progressText">0 of 9 steps done</span>
+            <span class="muted" id="progressPct">0%</span>
+          </div>
+          <div class="bar" id="progressBar" role="progressbar" aria-label="Steps done" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0">
+            <div class="bar-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <!-- 2. Time left -->
+        <div class="block">
+          <p class="time-big" id="timeLeft">About 3 h of work left</p>
+          <p class="time-range" id="timeRange"></p>
+        </div>
+
+        <!-- 3. Waiting on others -->
+        <div class="card card-amber" id="counselorCard">
+          <p class="card-title">Ask your counselor today.</p>
+          <p>Transcripts and the school form come from your school, so this can take longer than everything else.</p>
+          <p class="card-small">It takes you 5 minutes.</p>
+          <button class="btn btn-amber" id="copyEmailBtn" type="button">Copy email to counselor</button>
+        </div>
+        <div class="card card-calm" id="counselorNote" hidden>
+          <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#e8f6ee"/><path d="M5.8 10.4l2.7 2.7 5.7-6" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Counselor asked — follow up if nothing arrives.</span>
+        </div>
+
+        <!-- 4. Next step (most important element) -->
+        <div class="next" id="nextCard" tabindex="-1" aria-live="polite">
+          <svg class="check-anim" id="celebrateArt" viewBox="0 0 52 52" aria-hidden="true" hidden><circle cx="26" cy="26" r="24"/><path d="M15 27l7.5 7.5L37.5 19"/></svg>
+          <h2 class="next-title" id="nextTitle">Next: …</h2>
+          <p class="next-why" id="nextWhy"></p>
+          <p class="next-hint" id="nextHint" hidden></p>
+          <button class="btn btn-light" id="nextBtn" type="button">Mark done</button>
+        </div>
+
+        <!-- 5. Time picker -->
+        <div class="block">
+          <p class="q" id="timeQ">How much time do you have right now?</p>
+          <div class="chips" id="timeChips" role="group" aria-labelledby="timeQ"></div>
+          <p class="assume" id="timeAssume">No choice yet, so I'm planning for 1 hour.</p>
+        </div>
+
+        <!-- 6. Deadline countdown -->
+        <div class="block deadline">
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4" width="15" height="13.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2.5 8h15M6.5 2.5v3M13.5 2.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <div>
+            <p class="deadline-main" id="deadlineMain"></p>
+            <p class="deadline-sub" id="deadlineSub"></p>
+          </div>
+        </div>
+
+        <!-- 7. Workshop link -->
+        <a class="small-link" href="https://www.minerva.edu/events/" target="_blank" rel="noopener">Join an application workshop — attendees are 6x more likely to finish</a>
+        <!-- 8. Checklist (extension only: lets the applicant tick steps off) -->
+        <details class="card checklist" id="checklist">
+          <summary>Update my checklist</summary>
+          <div class="checklist-items" id="checklistItems"></div>
+          <button class="link-btn" id="resetBtn" type="button">Reset my progress</button>
+        </details>
+      </section>
+
+      <!-- ============ TAB 2: CAN I TRUST THIS? ============ -->
+      <section class="tab-panel" id="tabTrust" role="tabpanel" aria-labelledby="tabBtnTrust" hidden>
+
+        <article class="card">
+          <h3 class="card-q">Is Minerva accredited?</h3>
+          <p>Yes. Minerva University is an independent, non-profit institution accredited by the WASC Senior College and University Commission (WSCUC).</p>
+          <div class="card-actions">
+            <a class="btn btn-secondary" href="https://www.wscuc.org/" target="_blank" rel="noopener">Verify on WSCUC's website</a>
+            <a class="text-link" href="https://www.minerva.edu/accreditation" target="_blank" rel="noopener">Minerva's accreditation page</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="card-q">Is the application legit?</h3>
+          <p>Yes. There are no standardized tests; you take timed online challenges instead, and you can save and return any time.</p>
+          <div class="card-actions">
+            <a class="text-link" href="https://www.minerva.edu/undergraduate/admissions/" target="_blank" rel="noopener">Minerva's admissions page</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="card-q">Key dates</h3>
+          <!-- Filled from the DEADLINES array -->
+          <table class="dates" id="datesTable"></table>
+        </article>
+
+        <article class="card">
+          <h3 class="card-q">Talk to a real person</h3>
+          <div class="card-actions">
+            <a class="btn" href="mailto:admissions@minerva.edu">Email admissions</a>
+            <button class="btn btn-secondary" type="button" disabled>Chat with a current student — coming soon</button>
+          </div>
+        </article>
+
+        <p class="footnote">Answers link to sources so you can check them yourself.</p>
+      </section>
+    </div>
+  </aside>
+
+<script src="panel.js"></script>
+</body>
+</html>

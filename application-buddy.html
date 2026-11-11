@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minerva Application Buddy (demo)</title>
+<style>
+/* SHARED-CSS START (also used by the Chrome extension panel) */
+
+/* ---------- Colors, sizes, fonts ---------- */
+:root {
+  --accent: #1e40af;          /* deep blue: the one accent color */
+  --accent-strong: #1e3a8a;
+  --accent-soft: #eef2ff;
+  --text: #111827;
+  --muted: #5b6472;
+  --border: #e5e7eb;
+  --bg: #ffffff;
+  --bg-soft: #f7f8fa;
+  --amber-bg: #fff8eb;        /* amber: only for the counselor warning */
+  --amber-border: #f3c26b;
+  --amber-text: #7a4a00;
+  --green: #15803d;           /* green: only for "done" */
+  --green-bg: #e8f6ee;
+  --green-text: #166534;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+button { font: inherit; cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+[hidden] { display: none !important; }
+
+/* Visible keyboard focus everywhere */
+:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-size: 14px; font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, color .15s, transform .1s;
+}
+.btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+.btn:active { transform: translateY(1px); }
+.btn-secondary { background: #fff; color: var(--accent); border-color: #c7d2fe; }
+.btn-secondary:hover { background: var(--accent-soft); border-color: #a5b4fc; }
+.btn:disabled, .btn:disabled:hover { background: #f1f2f4; border-color: #e5e7eb; color: #6b7280; transform: none; }
+
+/* ---------- Side panel shell (looks like a Chrome side panel) ---------- */
+.panel { background: #fff; display: flex; flex-direction: column; min-width: 0; }
+.panel-bar {
+  height: 40px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 6px 0 12px;
+  background: #f8f9fb;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px; font-weight: 600; color: #202124;
+}
+.panel-bar .logo { width: 18px; height: 18px; flex-shrink: 0; }
+.panel-bar .x {
+  margin-left: auto; width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 50%; background: transparent; color: #5f6368;
+}
+.panel-bar .x:hover { background: #e8eaed; }
+
+.tabs { display: flex; flex-shrink: 0; padding: 0 12px; border-bottom: 1px solid var(--border); }
+.tab {
+  flex: 1; background: none; border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 12px 4px 10px; margin-bottom: -1px;
+  font-size: 14px; font-weight: 600; color: var(--muted);
+}
+.tab:hover { color: var(--text); }
+.tab[aria-selected="true"] { color: var(--accent-strong); border-bottom-color: var(--accent); }
+
+.panel-body { flex: 1; overflow-y: auto; }
+.tab-panel { padding: 18px 16px 28px; display: flex; flex-direction: column; gap: 18px; }
+
+.muted { color: var(--muted); }
+.block p { margin: 0; }
+
+/* 1. Progress */
+.progress-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; font-weight: 600; }
+.progress-head .muted { font-weight: 500; font-size: 13px; }
+.bar { height: 8px; margin-top: 8px; background: #eef0f3; border-radius: 999px; overflow: hidden; }
+.bar-fill {
+  height: 100%; width: 0; background: var(--accent); border-radius: 999px;
+  transition: width .6s cubic-bezier(.2, .8, .2, 1), background .3s;
+}
+.bar-fill.complete { background: var(--green); }
+
+/* 2. Time left */
+.time-big { font-size: 21px; font-weight: 700; line-height: 1.3; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.time-range { margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+
+/* Generic cards */
+.card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; background: #fff; }
+.card p { margin: 0; font-size: 14px; }
+.card-title { font-weight: 700; margin-bottom: 4px !important; }
+.card-small { margin-top: 4px !important; font-size: 13px !important; opacity: .9; }
+
+/* 3. Waiting on others */
+.card-amber { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber-text); }
+.btn-amber { margin-top: 12px; background: #fff; color: var(--amber-text); border-color: var(--amber-border); }
+.btn-amber:hover { background: #fff1d6; border-color: #e9a93a; }
+.btn-amber.copied { background: var(--green-bg); color: var(--green-text); border-color: #9fd8b5; }
+.card-calm { display: flex; gap: 10px; align-items: center; background: var(--bg-soft); color: #374151; font-size: 14px; }
+.card-calm svg { flex-shrink: 0; }
+
+/* 4. Next step: the visually strongest element */
+.next {
+  position: relative; overflow: hidden;
+  padding: 18px;
+  border-radius: var(--radius);
+  background: linear-gradient(155deg, #2446b8 0%, #1e3a8a 100%);
+  color: #fff;
+  box-shadow: 0 12px 28px -10px rgba(30, 58, 138, .55), 0 2px 6px rgba(30, 58, 138, .18);
+  transition: background .4s;
+}
+.next:focus-visible { outline-color: #93c5fd; }
+.next-title { margin: 0 0 6px; font-size: 18px; font-weight: 700; line-height: 1.3; }
+.next-why { margin: 0; font-size: 14px; opacity: .92; }
+.next-hint {
+  display: flex; gap: 8px; align-items: center;
+  margin: 10px 0 0; padding: 7px 10px;
+  border-radius: 8px; background: rgba(255, 255, 255, .13);
+  font-size: 13px;
+}
+.btn-light { width: 100%; margin-top: 14px; padding: 10px 14px; background: #fff; color: var(--accent-strong); border-color: #fff; }
+.btn-light:hover { background: #e0e7ff; border-color: #e0e7ff; }
+.next.swap { animation: swap .4s ease; }
+@keyframes swap { from { opacity: .35; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.next.celebrate { background: linear-gradient(155deg, #16a34a 0%, #166534 100%); box-shadow: 0 12px 28px -10px rgba(22, 101, 52, .5); }
+
+/* Celebration check + confetti */
+.check-anim { display: block; width: 52px; height: 52px; margin-bottom: 10px; }
+.check-anim circle { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: 3; stroke-dasharray: 151; stroke-dashoffset: 151; animation: draw .6s ease-out forwards; }
+.check-anim path { fill: none; stroke: #fff; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw .4s .45s ease-out forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.confetti {
+  position: absolute; top: -12px; width: 7px; height: 11px; border-radius: 2px;
+  pointer-events: none; opacity: 0;
+  animation: confetti-fall 1.5s ease-out forwards;
+}
+@keyframes confetti-fall {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+  100% { opacity: 0; transform: translate(var(--dx), 230px) rotate(var(--rot)); }
+}
+
+/* 5. Time picker */
+.q { font-size: 14px; font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip {
+  padding: 6px 13px; border-radius: 999px;
+  border: 1px solid var(--border); background: #fff; color: #374151;
+  font-size: 13px; font-weight: 600;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.chip:hover { border-color: #a5b4fc; background: var(--accent-soft); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.assume { margin-top: 6px !important; font-size: 12.5px; color: var(--muted); }
+
+/* 6. Deadline */
+.deadline { display: flex; gap: 12px; align-items: flex-start; }
+.deadline svg { flex-shrink: 0; margin-top: 2px; color: var(--accent); }
+.deadline-main { font-size: 14px; }
+.deadline-main strong { color: var(--accent-strong); }
+.deadline-sub { font-size: 12.5px; color: var(--muted); }
+
+/* 7. Workshop link */
+.small-link { font-size: 13px; font-weight: 500; }
+
+/* Trust tab */
+.card-q { margin: 0 0 6px; font-size: 15px; }
+.card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 12px; }
+.card-actions .btn { white-space: normal; text-align: center; }
+.text-link { font-size: 13.5px; font-weight: 500; }
+a[target="_blank"].text-link::after, a[target="_blank"].small-link::after { content: " \2197"; font-size: .85em; }
+.dates { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+.dates th, .dates td { text-align: left; padding: 7px 6px 7px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+.dates th { font-size: 12px; font-weight: 600; color: var(--muted); }
+.dates tr:last-child td { border-bottom: 0; }
+.dates td:first-child { font-weight: 600; }
+.footnote { margin: 0; font-size: 12.5px; color: var(--muted); text-align: center; }
+
+/* Respect "reduce motion" settings */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .check-anim circle, .check-anim path { stroke-dashoffset: 0; }
+  .confetti { display: none; }
+}
+/* SHARED-CSS END */
+
+/* ---------- Page layout: portal on the left, panel on the right ---------- */
+.app { display: grid; grid-template-columns: minmax(0, 1fr) 360px; min-height: 100vh; }
+.app > .panel { position: sticky; top: 0; height: 100vh; width: 360px; border-left: 1px solid var(--border); }
+@media (max-width: 899px) {
+  .app { grid-template-columns: 1fr; }
+  .app > .panel { position: static; height: auto; width: 100%; border-left: 0; border-top: 1px solid var(--border); }
+  .app > .panel .panel-body { overflow: visible; }
+}
+
+/* ---------- Mock application portal ---------- */
+.portal { background: var(--bg-soft); min-width: 0; }
+.demo-banner {
+  padding: 9px 16px; text-align: center;
+  background: #e9ebef; color: #374151;
+  font-size: 13px; font-weight: 600; letter-spacing: .01em;
+  border-bottom: 1px solid #dcdfe4;
+}
+.portal-inner { max-width: 780px; margin: 0 auto; padding: 36px 32px 110px; }
+.portal-kicker { margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.portal h1 { margin: 0; font-size: 27px; letter-spacing: -.02em; line-height: 1.25; }
+.portal-sub { margin: 8px 0 0; color: var(--muted); }
+
+.step-list { list-style: none; margin: 26px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.step-card {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 16px; align-items: start;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: background .25s, border-color .25s, box-shadow .25s;
+}
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent-strong);
+  font-size: 14px; font-weight: 700;
+  transition: background .25s, color .25s;
+}
+.step-num .tick { display: none; }
+.step-card.done { border-color: #cdebd9; }
+.step-card.done .step-num { background: var(--green-bg); color: var(--green-text); }
+.step-card.done .step-num .num { display: none; }
+.step-card.done .step-num .tick { display: block; }
+.step-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.step-name { margin: 0; font-size: 16px; font-weight: 650; line-height: 1.35; }
+.pill { padding: 2px 10px; border-radius: 999px; background: #f1f2f4; color: #4b5563; font-size: 12px; font-weight: 600; transition: background .25s, color .25s; }
+.pill.done { background: var(--green-bg); color: var(--green-text); }
+.step-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; color: var(--muted); }
+.tag { padding: 1px 8px; border-radius: 6px; border: 1px solid var(--border); background: #fff; color: #374151; font-size: 12px; font-weight: 600; }
+.step-desc { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
+.lock-note { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 13px; font-weight: 600; color: #4b5563; }
+
+/* Locked challenge cards are greyed out */
+.step-card.locked { background: #f1f2f4; border-color: #e3e5e9; }
+.step-card.locked .step-name,
+.step-card.locked .step-desc,
+.step-card.locked .step-meta { color: #6b7280; }
+.step-card.locked .step-num { background: #e5e7eb; color: #6b7280; }
+.step-card.locked .tag { background: #f7f8fa; color: #6b7280; }
+.step-card.locked .pill { background: #fff; }
+
+/* Step 9: external dependency + two checkboxes */
+.ext-note { margin-top: 10px; padding: 8px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; font-size: 13.5px; color: #1f2a44; }
+.checks { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.check { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; cursor: pointer; }
+.check input { width: 18px; height: 18px; margin: 2px 0 0; flex-shrink: 0; accent-color: var(--accent); cursor: pointer; }
+
+/* Highlight a card when the panel changes it */
+.step-card.flash { animation: flash 1.1s ease-out; }
+@keyframes flash { 0% { box-shadow: 0 0 0 4px rgba(37, 99, 235, .45); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
+
+@media (max-width: 600px) {
+  .portal-inner { padding: 24px 16px 100px; }
+  .step-card { grid-template-columns: 32px minmax(0, 1fr); padding: 16px; }
+  .step-action { grid-column: 2; }
+}
+
+/* ---------- Floating demo controls ---------- */
+.demo { position: fixed; left: 16px; bottom: 16px; z-index: 50; }
+.demo-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border: 0; border-radius: 999px;
+  background: #111827; color: #fff;
+  font-size: 13px; font-weight: 600;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .22);
+}
+.demo-toggle:hover { background: #1f2937; }
+.demo-menu {
+  position: absolute; left: 0; bottom: 46px; min-width: 200px;
+  display: flex; flex-direction: column; padding: 6px;
+  background: #fff; border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .14);
+}
+.demo-menu .label { padding: 6px 10px 4px; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.demo-menu button { padding: 8px 10px; border: 0; border-radius: 8px; background: none; text-align: left; font-size: 14px; color: var(--text); }
+.demo-menu button:hover { background: var(--bg-soft); }
+.demo-menu hr { width: 100%; margin: 4px 0; border: 0; border-top: 1px solid var(--border); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 20px; z-index: 60;
+  transform: translate(-50%, 20px); opacity: 0;
+  padding: 8px 14px; border-radius: 999px;
+  background: #111827; color: #fff; font-size: 13px; font-weight: 600;
+  pointer-events: none; transition: opacity .2s, transform .2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ======================= LEFT: MOCK APPLICATION PORTAL ======================= -->
+  <main class="portal" id="portal">
+    <div class="demo-banner" role="note">Demo only — not the real Minerva application</div>
+    <div class="portal-inner">
+      <p class="portal-kicker">Applicant portal</p>
+      <h1>Undergraduate Application (demo)</h1>
+      <p class="portal-sub">Nine steps. Part 1 unlocks the challenges. You can save and return any time.</p>
+      <!-- Step cards are generated from the STEPS array in the script below -->
+      <ol class="step-list" id="stepList" aria-label="Application steps"></ol>
+    </div>
+  </main>
+
+  <!-- ======================= RIGHT: BUDDY SIDE PANEL ======================= -->
+<!-- PANEL START -->
+  <aside class="panel" id="buddyPanel" aria-label="Application Buddy">
+    <!-- Thin top bar, like Chrome's side panel -->
+    <div class="panel-bar">
+      <svg class="logo" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1e40af"/><path d="M5.8 10.4l2.7 2.7 5.7-6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Application Buddy</span>
+      <button class="x" id="closeBtn" type="button" aria-label="Close panel" title="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 2.5l9 9M11.5 2.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Two tabs -->
+    <div class="tabs" role="tablist" aria-label="Buddy sections">
+      <button class="tab" type="button" role="tab" id="tabBtnProgress" aria-controls="tabProgress" aria-selected="true" tabindex="0">My progress</button>
+      <button class="tab" type="button" role="tab" id="tabBtnTrust" aria-controls="tabTrust" aria-selected="false" tabindex="-1">Can I trust this?</button>
+    </div>
+
+    <div class="panel-body">
+
+      <!-- ============ TAB 1: MY PROGRESS ============ -->
+      <section class="tab-panel" id="tabProgress" role="tabpanel" aria-labelledby="tabBtnProgress">
+
+        <!-- 1. Progress bar -->
+        <div class="block">
+          <div class="progress-head">
+            <span id="progressText">0 of 9 steps done</span>
+            <span class="muted" id="progressPct">0%</span>
+          </div>
+          <div class="bar" id="progressBar" role="progressbar" aria-label="Steps done" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0">
+            <div class="bar-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <!-- 2. Time left -->
+        <div class="block">
+          <p class="time-big" id="timeLeft">About 3 h of work left</p>
+          <p class="time-range" id="timeRange"></p>
+        </div>
+
+        <!-- 3. Waiting on others -->
+        <div class="card card-amber" id="counselorCard">
+          <p class="card-title">Ask your counselor today.</p>
+          <p>Transcripts and the school form come from your school, so this can take longer than everything else.</p>
+          <p class="card-small">It takes you 5 minutes.</p>
+          <button class="btn btn-amber" id="copyEmailBtn" type="button">Copy email to counselor</button>
+        </div>
+        <div class="card card-calm" id="counselorNote" hidden>
+          <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#e8f6ee"/><path d="M5.8 10.4l2.7 2.7 5.7-6" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Counselor asked — follow up if nothing arrives.</span>
+        </div>
+
+        <!-- 4. Next step (most important element) -->
+        <div class="next" id="nextCard" tabindex="-1" aria-live="polite">
+          <svg class="check-anim" id="celebrateArt" viewBox="0 0 52 52" aria-hidden="true" hidden><circle cx="26" cy="26" r="24"/><path d="M15 27l7.5 7.5L37.5 19"/></svg>
+          <h2 class="next-title" id="nextTitle">Next: …</h2>
+          <p class="next-why" id="nextWhy"></p>
+          <p class="next-hint" id="nextHint" hidden></p>
+          <button class="btn btn-light" id="nextBtn" type="button">Mark done</button>
+        </div>
+
+        <!-- 5. Time picker -->
+        <div class="block">
+          <p class="q" id="timeQ">How much time do you have right now?</p>
+          <div class="chips" id="timeChips" role="group" aria-labelledby="timeQ"></div>
+          <p class="assume" id="timeAssume">No choice yet, so I'm planning for 1 hour.</p>
+        </div>
+
+        <!-- 6. Deadline countdown -->
+        <div class="block deadline">
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4" width="15" height="13.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2.5 8h15M6.5 2.5v3M13.5 2.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <div>
+            <p class="deadline-main" id="deadlineMain"></p>
+            <p class="deadline-sub" id="deadlineSub"></p>
+          </div>
+        </div>
+
+        <!-- 7. Workshop link -->
+        <a class="small-link" href="https://www.minerva.edu/events/" target="_blank" rel="noopener">Join an application workshop — attendees are 6x more likely to finish</a>
+        <!-- EXTENSION-CHECKLIST-SLOT -->
+      </section>
+
+      <!-- ============ TAB 2: CAN I TRUST THIS? ============ -->
+      <section class="tab-panel" id="tabTrust" role="tabpanel" aria-labelledby="tabBtnTrust" hidden>
+
+        <article class="card">
+          <h3 class="card-q">Is Minerva accredited?</h3>
+          <p>Yes. Minerva University is an independent, non-profit institution accredited by the WASC Senior College and University Commission (WSCUC).</p>
+          <div class="card-actions">
+            <a class="btn btn-secondary" href="https://www.wscuc.org/" target="_blank" rel="noopener">Verify on WSCUC's website</a>
+            <a class="text-link" href="https://www.minerva.edu/accreditation" target="_blank" rel="noopener">Minerva's accreditation page</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="card-q">Is the application legit?</h3>
+          <p>Yes. There are no standardized tests; you take timed online challenges instead, and you can save and return any time.</p>
+          <div class="card-actions">
+            <a class="text-link" href="https://www.minerva.edu/undergraduate/admissions/" target="_blank" rel="noopener">Minerva's admissions page</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3 class="card-q">Key dates</h3>
+          <!-- Filled from the DEADLINES array -->
+          <table class="dates" id="datesTable"></table>
+        </article>
+
+        <article class="card">
+          <h3 class="card-q">Talk to a real person</h3>
+          <div class="card-actions">
+            <a class="btn" href="mailto:admissions@minerva.edu">Email admissions</a>
+            <button class="btn btn-secondary" type="button" disabled>Chat with a current student — coming soon</button>
+          </div>
+        </article>
+
+        <p class="footnote">Answers link to sources so you can check them yourself.</p>
+      </section>
+    </div>
+  </aside>
+<!-- PANEL END -->
+</div>
+
+<!-- ======================= DEMO CONTROLS (bottom-left) ======================= -->
+<div class="demo" id="demo">
+  <div class="demo-menu" id="demoMenu" hidden>
+    <span class="label">Jump to a state</span>
+    <button type="button" data-preset="fresh">Fresh applicant</button>
+    <button type="button" data-preset="halfway">Halfway</button>
+    <button type="button" data-preset="almost">Almost done</button>
+    <hr>
+    <button type="button" data-preset="reset">Reset</button>
+  </div>
+  <button class="demo-toggle" id="demoToggle" type="button" aria-expanded="false" aria-controls="demoMenu">
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5v9l7-4.5z" fill="currentColor"/></svg>
+    Demo
+  </button>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// SHARED-JS START (also used by the Chrome extension panel)
+
+/* =====================================================================
+   1. APPLICATION DATA  <-- edit times and text here
+   min / max = Minerva's published range in minutes, mid = midpoint used for totals.
+   type: "form" | "timed" | "writing". Timed steps 2-7 stay locked until step 1 is done.
+   ===================================================================== */
+const STEPS = [
+  { id: 1, name: "Part 1: Bio & academic info", type: "form", min: 10, max: 15, mid: 12,
+    desc: "Basic details about you and your studies. Unlocks every challenge." },
+  { id: 2, name: "Math challenge", type: "timed", min: 8, max: 20, mid: 14,
+    desc: "Timed online challenge. Do it in one sitting." },
+  { id: 3, name: "Logical Reasoning challenge", type: "timed", min: 8, max: 20, mid: 14,
+    desc: "Timed online challenge. Do it in one sitting." },
+  { id: 4, name: "Reading Comprehension challenge", type: "timed", min: 8, max: 20, mid: 14,
+    desc: "Timed online challenge. Do it in one sitting." },
+  { id: 5, name: "Divergent Thinking challenge", type: "timed", min: 8, max: 20, mid: 14,
+    desc: "Timed online challenge. Do it in one sitting." },
+  { id: 6, name: "Written communication task", type: "timed", min: 20, max: 20, mid: 20,
+    desc: "Timed written response." },
+  { id: 7, name: "Verbal communication task", type: "timed", min: 20, max: 20, mid: 20,
+    desc: "Timed verbal response." },
+  { id: 8, name: "Accomplishments", type: "writing", min: 60, max: 60, mid: 60, approx: true,
+    desc: "Examples, context, and supporting materials." },
+  { id: 9, name: "Academic background", type: "form", min: 10, max: 15, mid: 12, external: true,
+    desc: "Last 3 years of transcripts + counselor verification." },
+];
+
+// Deadlines (dates are YYYY-MM-DD)
+const DEADLINES = [
+  { round: "Regular Decision I",  admissions: "2027-01-05", aid: "2027-01-12", decisions: "2027-02-26" },
+  { round: "Regular Decision II", admissions: "2027-03-02", aid: "2027-03-09", decisions: "2027-04-12" },
+];
+
+// Time picker choices (minutes). "2+ hours" counts as 120.
+const TIME_CHOICES = [
+  { label: "15 min",   minutes: 15 },
+  { label: "30 min",   minutes: 30 },
+  { label: "1 hour",   minutes: 60 },
+  { label: "2+ hours", minutes: 120 },
+];
+const DEFAULT_MINUTES = 60;   // used when no time is picked
+const FOCUS_BUFFER = 5;       // timed steps need their max time + 5 min
+
+const TYPE_LABEL = { form: "Form", timed: "Timed", writing: "Writing" };
+
+// Template copied by "Copy email to counselor"
+const COUNSELOR_EMAIL = [
+  "Subject: Transcript request for my Minerva University application",
+  "",
+  "Hi [Counselor's name],",
+  "",
+  "I'm applying to Minerva University (Regular Decision I, deadline January 5, 2027).",
+  "Could you please send my transcripts from the last 3 years and complete the school's academic form when Minerva's request arrives?",
+  "",
+  "Thank you so much for your help!",
+  "",
+  "Best,",
+  "[Your name]",
+].join("\n");
+
+/* =====================================================================
+   2. STATE  (what the applicant has done)
+   done:  { stepId: true }   asked: step 9(a) checkbox   time: picked minutes or null
+   ===================================================================== */
+const STORAGE_KEY = "minervaBuddy.v1";
+let state = freshState();
+
+function freshState() {
+  return { done: {}, asked: false, time: null };
+}
+
+// Turn whatever was saved into a clean, valid state object
+function normalizeState(raw) {
+  const clean = freshState();
+  if (raw && typeof raw === "object") {
+    if (raw.done && typeof raw.done === "object") {
+      STEPS.forEach(s => { if (raw.done[s.id]) clean.done[s.id] = true; });
+    }
+    clean.asked = !!raw.asked;
+    if (TIME_CHOICES.some(c => c.minutes === raw.time)) clean.time = raw.time;
+  }
+  return clean;
+}
+
+function isDone(id) { return state.done[id] === true; }
+function doneCount() { return STEPS.filter(s => isDone(s.id)).length; }
+function isLocked(step) { return step.type === "timed" && !isDone(1); }
+function stepById(id) { return STEPS.find(s => s.id === id); }
+
+// Mark a step done / not done. Finishing step 9 implies the counselor was asked.
+function setStepDone(id, value) {
+  if (value) state.done[id] = true; else delete state.done[id];
+  if (id === 9 && value) state.asked = true;
+}
+
+// Step 9(a). Un-asking the counselor also un-completes step 9.
+function setAsked(value) {
+  state.asked = value;
+  if (!value) delete state.done[9];
+}
+
+/* =====================================================================
+   3. SMALL HELPERS
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function roundTo5(min) { return Math.round(min / 5) * 5; }
+
+// 130 -> "2 h 10 min", 180 -> "3 h", 45 -> "45 min"
+function formatMinutes(min) {
+  const m = roundTo5(min);
+  if (m <= 0) return "0 min";
+  const h = Math.floor(m / 60), r = m % 60;
+  if (!h) return r + " min";
+  if (!r) return h + " h";
+  return h + " h " + r + " min";
+}
+
+function rangeText(step) {
+  if (step.min === step.max) return (step.approx ? "about " : "") + step.min + " min";
+  return step.min + "–" + step.max + " min";
+}
+
+// Dates are compared as calendar days (no time-zone surprises)
+function dayValue(iso) { const [y, m, d] = iso.split("-").map(Number); return Date.UTC(y, m - 1, d); }
+function daysUntil(iso) {
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((dayValue(iso) - today) / 86400000);
+}
+function longDate(iso)  { return new Date(dayValue(iso)).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" }); }
+function shortDate(iso) { return new Date(dayValue(iso)).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }); }
+
+// The first round whose admissions deadline hasn't passed yet
+function activeRound() { return DEADLINES.find(r => daysUntil(r.admissions) >= 0) || null; }
+
+// Copy text to the clipboard, with an old-school fallback
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) { /* try fallback */ }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return ok;
+  } catch (e) { return false; }
+}
+
+/* =====================================================================
+   4. NEXT-STEP RULES  (plain if/else, no AI)
+   ===================================================================== */
+function getNextStep() {
+  if (doneCount() === STEPS.length) return { kind: "done" };
+
+  if (!isDone(1)) {
+    return { kind: "step", step: stepById(1), why: "Everything else unlocks after Part 1." };
+  }
+  if (!state.asked) {
+    return { kind: "counselor", why: "This one depends on someone else, so start it first." };
+  }
+
+  const available = state.time ?? DEFAULT_MINUTES;
+  for (const step of STEPS) {
+    if (isDone(step.id)) continue;
+    const fits = step.type === "timed"
+      ? available >= step.max + FOCUS_BUFFER   // timed: needs full focus time
+      : available >= step.mid;                 // others: midpoint is enough
+    if (fits) {
+      return {
+        kind: "step", step,
+        why: "First open step that fits " + (state.time ? "your " + choiceLabel(state.time) : "about 1 hour") + ".",
+        hint: step.type === "timed" ? "Find a quiet spot and close other programs." : null,
+      };
+    }
+  }
+  return { kind: "none" };
+}
+
+function choiceLabel(min) { return (TIME_CHOICES.find(c => c.minutes === min) || {}).label || min + " min"; }
+
+/* =====================================================================
+   5. PANEL RENDERING  (reads state, updates the panel)
+   ===================================================================== */
+function renderPanel() {
+  renderProgress();
+  renderTimeLeft();
+  renderWaiting();
+  renderNext();
+  renderChips();
+  renderDeadline();
+}
+
+// 1. Progress bar
+function renderProgress() {
+  const n = doneCount(), total = STEPS.length;
+  const pct = Math.round((n / total) * 100);
+  $("progressText").textContent = n + " of " + total + " steps done";
+  $("progressPct").textContent = pct + "%";
+  $("progressFill").style.width = pct + "%";
+  $("progressFill").classList.toggle("complete", n === total);
+  $("progressBar").setAttribute("aria-valuenow", n);
+  $("progressBar").setAttribute("aria-valuetext", n + " of " + total + " steps done");
+}
+
+// 2. Time left (number animates smoothly between values)
+let shownMinutes = null, timeAnim = null;
+function renderTimeLeft() {
+  const open = STEPS.filter(s => !isDone(s.id));
+  const sum = key => open.reduce((t, s) => t + s[key], 0);
+  const target = sum("mid");
+
+  $("timeRange").textContent = open.length
+    ? "range " + formatMinutes(sum("min")) + " – " + formatMinutes(sum("max"))
+    : "All 9 steps are complete.";
+
+  const paint = v => {
+    $("timeLeft").textContent = roundTo5(v) > 0 ? "About " + formatMinutes(v) + " of work left" : "No work left. Just submit!";
+  };
+  cancelAnimationFrame(timeAnim);
+  if (shownMinutes === null || reduceMotion) { shownMinutes = target; paint(target); return; }
+  const from = shownMinutes, start = performance.now(), duration = 500;
+  const tick = now => {
+    const p = Math.min(1, (now - start) / duration);
+    shownMinutes = from + (target - from) * (1 - Math.pow(1 - p, 3));  // ease-out
+    paint(p < 1 ? shownMinutes : target);
+    if (p < 1) timeAnim = requestAnimationFrame(tick); else shownMinutes = target;
+  };
+  timeAnim = requestAnimationFrame(tick);
+}
+
+// 3. Waiting on others
+function renderWaiting() {
+  $("counselorCard").hidden = state.asked;
+  $("counselorNote").hidden = !state.asked;
+}
+
+// 4. Next step card
+let lastNextKey = null;
+function renderNext() {
+  const next = getNextStep();
+  const card = $("nextCard"), title = $("nextTitle"), why = $("nextWhy"), hint = $("nextHint"), btn = $("nextBtn");
+  let key;
+
+  card.classList.remove("celebrate");
+  $("celebrateArt").setAttribute("hidden", "");   // SVGs need the attribute, not .hidden
+  hint.hidden = true;
+  btn.hidden = false;
+
+  if (next.kind === "done") {
+    key = "done";
+    const round = activeRound();
+    card.classList.add("celebrate");
+    $("celebrateArt").removeAttribute("hidden");
+    title.textContent = "Everything's done — submit before " + (round ? longDate(round.admissions) : "the deadline") + "!";
+    why.textContent = "All 9 steps are complete. Nice work.";
+    btn.hidden = true;
+  } else if (next.kind === "counselor") {
+    key = "counselor";
+    title.textContent = "Next: Email your counselor (5 min)";
+    why.textContent = next.why;
+    btn.setAttribute("aria-label", "Mark counselor email done");
+  } else if (next.kind === "step") {
+    key = "step-" + next.step.id;
+    title.textContent = "Next: " + next.step.name + " (~" + next.step.mid + " min)";
+    why.textContent = next.why;
+    if (next.hint) { hint.textContent = next.hint; hint.hidden = false; }
+    btn.setAttribute("aria-label", "Mark " + next.step.name + " done");
+  } else {
+    key = "none";
+    title.textContent = "Not enough time for a full step.";
+    why.textContent = isDone(8)
+      ? "Use it to review what you've already finished."
+      : "Use it to gather links and files for your Accomplishments.";
+    btn.hidden = true;
+  }
+
+  // Animate only when the suggestion actually changes
+  if (lastNextKey !== null && key !== lastNextKey && !reduceMotion) {
+    card.classList.remove("swap"); void card.offsetWidth; card.classList.add("swap");
+    if (key === "done") burstConfetti(card);
+  }
+  lastNextKey = key;
+}
+
+function burstConfetti(container) {
+  const colors = ["#ffffff", "#bbf7d0", "#86efac", "#bfdbfe", "#fde68a"];
+  for (let i = 0; i < 28; i++) {
+    const c = document.createElement("span");
+    c.className = "confetti";
+    c.style.left = (5 + Math.random() * 90) + "%";
+    c.style.background = colors[i % colors.length];
+    c.style.setProperty("--dx", (Math.random() * 80 - 40) + "px");
+    c.style.setProperty("--rot", (Math.random() * 720 - 360) + "deg");
+    c.style.animationDelay = (Math.random() * 0.25) + "s";
+    container.appendChild(c);
+    setTimeout(() => c.remove(), 1900);
+  }
+}
+
+// 5. Time picker chips
+function renderChips() {
+  document.querySelectorAll("#timeChips .chip").forEach(chip => {
+    chip.setAttribute("aria-pressed", String(Number(chip.dataset.minutes) === state.time));
+  });
+  $("timeAssume").hidden = state.time !== null;
+}
+
+// 6. Deadline countdown (uses today's real date)
+function renderDeadline() {
+  const round = activeRound();
+  if (!round) {
+    $("deadlineMain").textContent = "All 2027 application deadlines have passed.";
+    $("deadlineSub").textContent = "";
+    return;
+  }
+  const d = daysUntil(round.admissions);
+  const left = d === 0 ? "due today" : d + (d === 1 ? " day" : " days") + " left";
+  $("deadlineMain").innerHTML = round.round + ": <strong>" + left + "</strong> (" + longDate(round.admissions) + ")";
+  $("deadlineSub").textContent = "Financial aid documents due " + longDate(round.aid);
+}
+
+// Key dates table on the trust tab
+function renderDatesTable() {
+  const rows = DEADLINES.map(r =>
+    "<tr><td>" + r.round.replace("Regular Decision", "RD") + "</td><td>" + shortDate(r.admissions) +
+    "</td><td>" + shortDate(r.aid) + "</td><td>" + shortDate(r.decisions) + "</td></tr>").join("");
+  $("datesTable").innerHTML =
+    "<thead><tr><th scope='col'>Round</th><th scope='col'>Apply by</th><th scope='col'>Financial aid</th><th scope='col'>Decision by</th></tr></thead><tbody>" +
+    rows + "</tbody>";
+}
+
+/* =====================================================================
+   6. PANEL EVENTS  (run once at start-up)
+   ===================================================================== */
+function bindPanel() {
+  // Tabs (click + arrow keys)
+  const tabs = [$("tabBtnProgress"), $("tabBtnTrust")];
+  const selectTab = tab => tabs.forEach(t => {
+    const on = t === tab;
+    t.setAttribute("aria-selected", String(on));
+    t.tabIndex = on ? 0 : -1;
+    $(t.getAttribute("aria-controls")).hidden = !on;
+  });
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => selectTab(t));
+    t.addEventListener("keydown", e => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const other = tabs[(i + 1) % tabs.length];
+      selectTab(other); other.focus();
+    });
+  });
+  window.showProgressTab = () => selectTab(tabs[0]);
+
+  // Time chips (click the selected chip again to clear it)
+  $("timeChips").innerHTML = TIME_CHOICES.map(c =>
+    '<button class="chip" type="button" aria-pressed="false" data-minutes="' + c.minutes + '">' + c.label + "</button>").join("");
+  $("timeChips").addEventListener("click", e => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    const m = Number(chip.dataset.minutes);
+    state.time = state.time === m ? null : m;
+    update();
+  });
+
+  // "Mark done" on the next-step card
+  $("nextBtn").addEventListener("click", () => {
+    const next = getNextStep();
+    if (next.kind === "step") { setStepDone(next.step.id, true); update(next.step.id); }
+    else if (next.kind === "counselor") { setAsked(true); update(9); }
+    if ($("nextBtn").hidden) $("nextCard").focus();   // keep keyboard focus somewhere sensible
+  });
+
+  // Copy counselor email
+  $("copyEmailBtn").addEventListener("click", async () => {
+    const btn = $("copyEmailBtn");
+    const ok = await copyText(COUNSELOR_EMAIL);
+    btn.textContent = ok ? "Copied!" : "Couldn't copy. Try again.";
+    btn.classList.toggle("copied", ok);
+    clearTimeout(btn._t);
+    btn._t = setTimeout(() => { btn.textContent = "Copy email to counselor"; btn.classList.remove("copied"); }, 2000);
+  });
+
+  renderDatesTable();
+}
+// SHARED-JS END
+
+/* =====================================================================
+   7. SAVING  (localStorage, wrapped in try/catch so it never breaks the demo)
+   ===================================================================== */
+function loadState() {
+  try { return normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY))); }
+  catch (e) { return freshState(); }
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+}
+
+// Call this after ANY change: saves, then redraws portal + panel.
+// flashId highlights a portal card (used when the panel changes something).
+function update(flashId) {
+  saveState();
+  renderPortal(flashId);
+  renderPanel();
+}
+
+/* =====================================================================
+   8. MOCK PORTAL  (left side)
+   ===================================================================== */
+const ICON_TICK = '<svg class="tick" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICON_LOCK = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="6" width="9" height="6.5" rx="1.5" fill="currentColor"/><path d="M4.5 6V4.5a2.5 2.5 0 015 0V6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+
+function stepCardHTML(s) {
+  const lock = s.type === "timed"
+    ? '<p class="lock-note" data-lock hidden>' + ICON_LOCK + "Locked until Part 1 is submitted</p>" : "";
+  const external = s.external
+    ? '<div class="ext-note"><strong>Needs your school:</strong> a school official sends your transcripts and completes an academic form.</div>' +
+      '<div class="checks">' +
+        '<label class="check"><input type="checkbox" id="chkAsked"> I asked my counselor to send transcripts and the form</label>' +
+        '<label class="check"><input type="checkbox" id="chkComplete"> Section complete</label>' +
+      "</div>"
+    : "";
+  return (
+    '<li class="step-card" id="step-' + s.id + '">' +
+      '<div class="step-num" aria-hidden="true"><span class="num">' + s.id + "</span>" + ICON_TICK + "</div>" +
+      '<div class="step-body">' +
+        '<div class="step-top"><h2 class="step-name">' + s.name + '</h2><span class="pill" data-pill>Not started</span></div>' +
+        '<div class="step-meta"><span class="tag">' + TYPE_LABEL[s.type] + "</span><span>" + rangeText(s) + "</span></div>" +
+        '<p class="step-desc">' + s.desc + "</p>" + lock + external +
+      "</div>" +
+      '<div class="step-action"><button class="btn" type="button" data-toggle="' + s.id + '">Mark complete</button></div>' +
+    "</li>"
+  );
+}
+
+function buildPortal() {
+  const list = $("stepList");
+  list.innerHTML = STEPS.map(stepCardHTML).join("");
+
+  // "Mark complete" / "Undo" buttons
+  list.addEventListener("click", e => {
+    const btn = e.target.closest("button[data-toggle]");
+    if (!btn || btn.disabled) return;
+    const id = Number(btn.dataset.toggle);
+    setStepDone(id, !isDone(id));
+    update();
+  });
+
+  // Step 9 checkboxes
+  list.addEventListener("change", e => {
+    if (e.target.id === "chkAsked") { setAsked(e.target.checked); update(); }
+    if (e.target.id === "chkComplete") { setStepDone(9, e.target.checked); update(); }
+  });
+}
+
+function renderPortal(flashId) {
+  STEPS.forEach(s => {
+    const card = $("step-" + s.id);
+    const done = isDone(s.id), locked = isLocked(s);
+    card.classList.toggle("done", done);
+    card.classList.toggle("locked", locked);
+
+    const pill = card.querySelector("[data-pill]");
+    pill.textContent = done ? "Done" : "Not started";
+    pill.classList.toggle("done", done);
+
+    const btn = card.querySelector("[data-toggle]");
+    btn.textContent = done ? "Undo" : "Mark complete";
+    btn.classList.toggle("btn-secondary", done);
+    btn.disabled = locked;
+    btn.setAttribute("aria-label", (done ? "Undo " : "Mark complete: ") + s.name);
+
+    const lock = card.querySelector("[data-lock]");
+    if (lock) lock.hidden = !locked;
+  });
+  $("chkAsked").checked = state.asked;
+  $("chkComplete").checked = isDone(9);
+
+  if (flashId) {
+    const card = $("step-" + flashId);
+    card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash");
+  }
+}
+
+/* =====================================================================
+   9. DEMO CONTROLS  (bottom-left menu)
+   ===================================================================== */
+const PRESETS = {
+  fresh:   { label: "Fresh applicant", done: [],                    asked: false },
+  halfway: { label: "Halfway",         done: [1, 2, 3],             asked: true  },
+  almost:  { label: "Almost done",     done: [1, 2, 3, 4, 5, 6, 7], asked: true  },
+};
+
+function bindDemo() {
+  const menu = $("demoMenu"), toggle = $("demoToggle");
+  const setOpen = open => { menu.hidden = !open; toggle.setAttribute("aria-expanded", String(open)); };
+
+  toggle.addEventListener("click", () => setOpen(menu.hidden));
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !menu.hidden) { setOpen(false); toggle.focus(); } });
+  document.addEventListener("click", e => { if (!$("demo").contains(e.target)) setOpen(false); });
+
+  menu.addEventListener("click", e => {
+    const btn = e.target.closest("button[data-preset]");
+    if (!btn) return;
+    const name = btn.dataset.preset;
+    if (name === "reset") {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* ignore */ }
+      state = freshState();
+      showToast("Reset: everything cleared");
+    } else {
+      const p = PRESETS[name];
+      state = { done: {}, asked: p.asked, time: state.time };
+      p.done.forEach(id => { state.done[id] = true; });
+      showToast("Loaded: " + p.label);
+    }
+    window.showProgressTab();
+    update();
+    setOpen(false);
+  });
+
+  // Note: the "x" in the panel bar intentionally does nothing in this demo.
+}
+
+function showToast(text) {
+  const t = $("toast");
+  t.textContent = text;
+  t.classList.add("show");
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+/* =====================================================================
+   10. START
+   ===================================================================== */
+state = loadState();
+buildPortal();
+bindPanel();
+bindDemo();
+renderPortal();
+renderPanel();
+</script>
+</body>
+</html>
