@@ -31,10 +31,10 @@
         <!-- 1. Progress bar -->
         <div class="block">
           <div class="progress-head">
-            <span id="progressText">0 of 9 steps done</span>
+            <span id="progressText">0 of 16 steps done</span>
             <span class="muted" id="progressPct">0%</span>
           </div>
-          <div class="bar" id="progressBar" role="progressbar" aria-label="Steps done" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0">
+          <div class="bar" id="progressBar" role="progressbar" aria-label="Steps done" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0">
             <div class="bar-fill" id="progressFill"></div>
           </div>
         </div>
@@ -87,6 +87,7 @@
         <!-- 8. Checklist (extension only: lets the applicant tick steps off) -->
         <details class="card checklist" id="checklist">
           <summary>Update my checklist</summary>
+          <p class="check-note">Steps marked "detected on page" were ticked automatically from what the application page showed. Nothing leaves this browser.</p>
           <div class="checklist-items" id="checklistItems"></div>
           <button class="link-btn" id="resetBtn" type="button">Reset my progress</button>
         </details>
@@ -131,6 +132,8 @@
     </div>
   </aside>
 
+<!-- storage-shim.js only does something when the panel is opened as a plain web page (tests). -->
+<script src="storage-shim.js"></script>
 <script src="panel.js"></script>
 </body>
 </html>

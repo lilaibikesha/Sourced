@@ -226,3 +226,9 @@ body > .panel { height: 100vh; }
 .check small { display: block; color: var(--muted); font-size: 12px; }
 .link-btn { margin: 0 14px 12px; padding: 0; border: 0; background: none; color: var(--muted); font-size: 12.5px; text-decoration: underline; }
 .link-btn:hover { color: var(--text); }
+
+/* ---------- v0.2: checklist groups + auto-detected tag ---------- */
+.check-group { margin: 12px 0 2px; font-size: 12px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: var(--muted); }
+.check-group:first-child { margin-top: 4px; }
+.check-note { margin: 0; padding: 10px 14px 0; font-size: 12px; color: var(--muted); }
+.auto-tag { font-style: normal; color: var(--green-text); font-weight: 600; }

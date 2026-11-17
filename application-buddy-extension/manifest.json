@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Minerva Application Buddy (prototype)",
-  "version": "0.1.0",
-  "description": "Prototype side panel that helps applicants finish the Minerva University undergraduate application.",
+  "version": "0.2.0",
+  "description": "Prototype side panel that tracks progress through the Minerva University undergraduate application. Stores progress only in this browser.",
   "permissions": [
     "storage",
     "sidePanel"
@@ -27,5 +27,18 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "detector.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
 }
