@@ -1,6 +1,6 @@
 # Application Buddy: meeting brief (Nov 18, 2026)
 
-Branch: `buddy-real-flow-autodetect` (v0.2). `main` is still v0.1 (8a51459). The placeholder root `manifest.json` was removed on this branch (be80bb5).
+v0.2 was built on the branch `buddy-real-flow-autodetect` and merged into `main` on Nov 18, 2026. The root `manifest.json` was briefly deleted (be80bb5) and then restored (56ef7df), because the repo tools read it.
 
 ## What changed from v0.1 to v0.2
 - **Real application flow.** v0.1 had 9 made-up steps. v0.2 has the 16 required steps of the real Admission Center plus optional financial aid, with the real lock rules: Expression needs Verify ID, each "Close" needs its section finished, and Submit needs all four parts closed.
@@ -18,6 +18,6 @@ Branch: `buddy-real-flow-autodetect` (v0.2). `main` is still v0.1 (8a51459). The
 2. What is the **status of the privacy review** that has to happen before auto-detect can run on minerva.edu?
 3. Is the **achievements/progress feature open to integration**, so Buddy could read progress from it instead of page labels?
 
-## Decisions I need to make
-- **Merge v0.2 into `main`?** Not merged yet.
-- **The old live demo page** (`application-buddy.html` on GitHub Pages) still shows v0.1 with 9 steps and the old blue style. Update it or remove it?
+## Decisions (made Nov 18)
+- **v0.2 is merged into `main`.**
+- **The old live demo page was updated, not removed.** `application-buddy.html` is linked from older posts, so the address stays and now forwards to the v0.2 demo (`application-buddy-extension/test/run-fake-application.html`).
