@@ -345,7 +345,7 @@ function renderNext() {
 }
 
 function burstConfetti(container) {
-  const colors = ["#ffffff", "#bbf7d0", "#86efac", "#bfdbfe", "#fde68a"];
+  const colors = ["#ffffff", "#f0b91e", "#f0871e", "#b4d200", "#f0ebe6"];
   for (let i = 0; i < 28; i++) {
     const c = document.createElement("span");
     c.className = "confetti";
