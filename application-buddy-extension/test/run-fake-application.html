@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Application Buddy: fake application run (local)</title>
+<style>
+  body { margin: 0; font: 14px system-ui, sans-serif; }
+  header { padding: 8px 12px; background: #111827; color: #fff; display: flex; gap: 12px; align-items: center; }
+  header button { padding: 4px 10px; }
+  .split { display: grid; grid-template-columns: 1fr 380px; height: calc(100vh - 42px); }
+  iframe { width: 100%; height: 100%; border: 0; }
+  #panelFrame { border-left: 1px solid #ddd; }
+</style>
+</head>
+<body>
+<header>
+  <strong>Fake application run</strong>
+  <span>Left: local fake portal (fixture). Right: the real panel.html, sharing storage through storage-shim.js.</span>
+  <button id="reset" type="button">Reset both</button>
+</header>
+<div class="split">
+  <iframe id="portalFrame" title="Fake portal" src="fake-portal.html#part1"></iframe>
+  <iframe id="panelFrame" title="Application Buddy panel" src="../panel.html"></iframe>
+</div>
+<script>
+  // Serve the repo with any static server (e.g. `npx serve` or `python3 -m http.server`) and open
+  // http://localhost:PORT/application-buddy-extension/test/run-fake-application.html
+  document.getElementById("reset").onclick = () => {
+    Object.keys(localStorage).filter(k => k.startsWith("buddyShim:") || k === "fakePortal.v1").forEach(k => localStorage.removeItem(k));
+    document.getElementById("portalFrame").src = "fake-portal.html?run=" + Date.now() + "#part1";  // new URL forces a reload
+    document.getElementById("panelFrame").src = "../panel.html?run=" + Date.now();
+  };
+</script>
+</body>
+</html>

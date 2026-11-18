@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAKE Minerva application (local test fixture)</title>
+<!--
+  LOCAL TEST FIXTURE. Not Minerva's site and not connected to it.
+  It copies the screen order and status wording of the real Admission Center
+  (from Ben's screenshot set) so the extension's auto-detection can be tested
+  end to end without touching the official application or any real data.
+  Only invented "TEST" applicants are accepted. Nothing is sent anywhere;
+  state lives in this page's localStorage ("fakePortal.v1").
+-->
+<style>
+  body { font: 15px/1.45 system-ui, sans-serif; margin: 0; color: #1d1d1f; background: #faf8f3; }
+  .fixture-banner { background: #b91c1c; color: #fff; padding: 6px 12px; font-weight: 700; font-size: 13px; }
+  main { max-width: 900px; margin: 0 auto; padding: 16px; }
+  h1 { font-family: Georgia, serif; font-weight: 400; margin: 8px 0 12px; }
+  h2 { font-family: Georgia, serif; font-weight: 400; margin: 24px 0 8px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .card { background: #fff; border: 1px solid #e3ddd0; border-radius: 6px; padding: 10px 12px; flex: 1 1 180px; }
+  .card.done { background: #111; color: #fff; border-color: #d4a017; }
+  .card h3 { margin: 0 0 4px; font-size: 16px; }
+  .card p { margin: 2px 0; font-size: 13px; }
+  .stepper span { margin-right: 14px; font-size: 13px; color: #777; }
+  button, .btn { background: #f2b705; border: 0; border-radius: 6px; padding: 7px 12px; font-weight: 700; cursor: pointer; color: #111; text-decoration: none; display: inline-block; margin: 4px 4px 0 0; }
+  button.grey { background: #ddd; }
+  button:disabled { background: #e5e5e5; color: #999; cursor: not-allowed; }
+  .doc { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #e3ddd0; border-radius: 6px; padding: 10px 12px; margin: 6px 0; }
+  .doc.done { border-color: #d4a017; }
+  label { display: block; margin: 8px 0 2px; font-weight: 600; }
+  input[type=text], input[type=email], select { width: 100%; max-width: 380px; padding: 6px; }
+  .err { color: #b91c1c; font-weight: 600; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; }
+  .modal > div { background: #fff; padding: 18px; border-radius: 8px; max-width: 480px; }
+</style>
+</head>
+<body>
+<div class="fixture-banner">LOCAL TEST FIXTURE: fake application, invented data only. Not connected to Minerva.</div>
+<main id="app"></main>
+<script>
+const KEY = "fakePortal.v1";
+const CH = [["understanding","Understanding","7 minutes",7],["creativity","Creativity","8 minutes",15],["math","Math","8 minutes",20],
+            ["reasoning","Reasoning","21 minutes",13],["writing","Writing","20 minutes",1],["expression","Expression","~15 minutes",5]];
+const fresh = () => ({ applicant: null, challenges: {}, accomplishments: [], school: null, fa: null, verified: false,
+  parent: false, disciplinary: false, closed: { p2: false, p3: false, docs: false }, submitted: false, log: [] });
+let S = JSON.parse(localStorage.getItem(KEY) || "null") || fresh();
+const save = () => localStorage.setItem(KEY, JSON.stringify(S));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const go = h => { location.hash = h; };
+const $app = document.getElementById("app");
+const allChallenges = () => CH.every(([id]) => S.challenges[id]);
+const docsReady = () => S.school && S.verified && S.parent && S.disciplinary;
+const canSubmit = () => S.applicant && S.closed.p2 && S.closed.p3 && S.closed.docs;
+
+function partCard(title, sub, done) {
+  return `<div class="card ${done ? "done" : ""}"><h3>${title}</h3><p>${sub}</p>${done ? "<p><b>Complete</b></p>" : `<a class="btn" href="#hub">Go to section →</a>`}</div>`;
+}
+function challengeCard([id, title, len]) {
+  const done = S.challenges[id];
+  return `<div class="card ${done ? "done" : ""}"><h3>${title}</h3>${done ? "<p><b>Challenge Complete</b> ✓</p>"
+    : `<p>Challenge Length: ${len}</p><button data-go="#challenge/${id}">Take the Challenge</button>`}</div>`;
+}
+function docRow(title, text, done, actions) {
+  return `<div class="doc ${done ? "done" : ""}"><div><h3 style="margin:0">${title}</h3><p style="margin:2px 0;font-size:13px">${text}</p></div><div>${done ? `<a href="#hub">Edit →</a>` : actions}</div></div>`;
+}
+
+const views = {
+  part1() {
+    if (S.applicant) return go("hub");
+    $app.innerHTML = `<h1>Start Your Application</h1>
+      <p class="stepper"><span>Contact Details</span><span>Address</span><span>Important Details</span><span>Agreements</span><span>Admission Center Unlocked!</span></p>
+      <p>Complete Part One to progress to the Admission Center</p>
+      <h2>Personal Information</h2>
+      <label for="fn">First name *</label><input id="fn" type="text">
+      <label for="ln">Last or family name *</label><input id="ln" type="text">
+      <label for="em">Email address *</label><input id="em" type="email">
+      <label><input id="agree" type="checkbox"> I have read and agree to the Minerva University Terms of Use and Privacy Policy</label>
+      <label><input id="cert" type="checkbox"> I have read, understand, and agree to be bound by the Minerva Admissions and Enrollment Certification</label>
+      <p id="err" class="err"></p>
+      <button id="submitPart1">Submit Part One</button>`;
+    document.getElementById("submitPart1").onclick = () => {
+      const fn = document.getElementById("fn").value.trim(), ln = document.getElementById("ln").value.trim(), em = document.getElementById("em").value.trim();
+      const err = document.getElementById("err");
+      if (!/TEST/.test(fn) || !/TEST/.test(ln)) return err.textContent = "Fixture rule: first and last name must contain TEST.";
+      if (!/@(example\.(com|org|net)|[a-z0-9-]+\.test)$/i.test(em)) return err.textContent = "Fixture rule: use a reserved test email domain (example.com or *.test).";
+      if (!document.getElementById("agree").checked || !document.getElementById("cert").checked) return err.textContent = "Please accept both agreements.";
+      S.applicant = { fn, ln, em }; S.log.push(["part1", new Date().toISOString()]); save(); go("hub");
+    };
+  },
+  hub() {
+    if (!S.applicant) return go("part1");
+    if (S.submitted) return go("submitted");
+    const nAcc = S.accomplishments.length;
+    $app.innerHTML = `<p>${esc(S.applicant.fn)} ${esc(S.applicant.ln)} · Admission Center · Logout</p>
+      <h1>Welcome, ${esc(S.applicant.fn)} ${esc(S.applicant.ln)}</h1>
+      <p class="stepper"><span>Part 1</span><span>Part 2</span><span>Part 3</span><span>Official Documents &amp; Information</span><span>Time to Submit Your Application!</span></p>
+      <h2>Your Application Progress</h2>
+      <div class="row">${partCard("Part 1", "Basic Information", true)}${partCard("Part 2", "How You Think", S.closed.p2)}${partCard("Part 3", "Accomplishments", S.closed.p3)}${partCard("Official Documents &amp; Information", "Official Records", S.closed.docs)}</div>
+      <p>${canSubmit() ? "Congratulations! You've completed everything to submit your application." : "Submission button unlocks when you complete all parts of the application."}</p>
+      <button id="submitApp" ${canSubmit() ? "" : "disabled"}>Submit</button>
+      <h2>Part 2. How You Think</h2>
+      <p>Laptop or Desktop, Microphone, and Webcam Required for Part 2.</p>
+      <div class="row">${CH.map(challengeCard).join("")}</div>
+      <button id="closeP2" ${allChallenges() && !S.closed.p2 ? "" : "disabled"}>Close Part 2</button>
+      <h2>Part 3. What Have You Achieved</h2>
+      <p>Our best applicants add six accomplishments.</p>
+      ${[0,1,2,3,4,5].map(i => S.accomplishments[i]
+        ? `<div class="doc done"><div><h3 style="margin:0">${esc(S.accomplishments[i])}</h3></div><div><a href="#hub">Edit →</a></div></div>`
+        : `<div class="doc"><div><h3 style="margin:0">Achievement ${i + 1}</h3></div><div>${S.closed.p3 ? "" : `<button data-go="#accomplishment">Add an Accomplishment</button>`}</div></div>`).join("")}
+      <p>${nAcc} of 6 added · 3 Achievements Minimum</p>
+      <button id="closeP3" ${nAcc >= 3 && !S.closed.p3 ? "" : "disabled"}>Close Part 3</button>
+      <h2>Official Documents and Information</h2>
+      ${docRow("Academic Performance", S.school ? esc(S.school) : "Add the schools you attended.", !!S.school, `<button data-go="#school">Add Another School</button>`)}
+      ${S.fa === "declined"
+        ? `<div class="doc"><div><h3 style="margin:0">Financial Aid Application</h3><p style="margin:2px 0;font-size:13px">You indicated that you do not need Financial Aid. This means that you will not be allowed to apply for aid if admitted.</p></div></div>`
+        : docRow("Financial Aid Application", "The Financial Aid Application deadline is September 08, 2026.", false, `<button class="grey" id="skipFa">Skip for now</button><button data-go="#fa">Financial Aid Center</button>`)}
+      ${docRow("Verify your ID", "We need to verify your identity as part of your application. Please use valid government-issued photo identification.", S.verified, `<button data-go="#verify">Verify Your ID</button>`)}
+      ${docRow("Parent/Guardian Contact Information", "Please provide contact information for your parent or guardian.", S.parent, `<button data-go="#parent">Add Contact</button>`)}
+      ${docRow("Disciplinary Record", "Please answer a few questions regarding your disciplinary record.", S.disciplinary, `<button data-go="#disciplinary">View Form</button>`)}
+      <button id="closeDocs" ${docsReady() && !S.closed.docs ? "" : "disabled"}>Close This Section</button>`;
+    const on = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
+    on("closeP2", () => { S.closed.p2 = true; save(); render(); });
+    on("closeP3", () => { S.closed.p3 = true; save(); render(); });
+    on("closeDocs", () => { S.closed.docs = true; save(); render(); });
+    on("skipFa", () => { S.fa = "declined"; save(); render(); });
+    on("submitApp", () => S.fa === "declined" ? faConfirm() : markComplete());
+  },
+  lobby() { go("hub"); },
+  challenge(id) {
+    const c = CH.find(x => x[0] === id);
+    if (id === "expression" && !S.verified) {
+      $app.innerHTML = `<h1>Graded Challenge: Expression</h1><p class="err">Verify your ID in Official Documents and Information before starting this challenge.</p><button data-go="#hub">Back to Challenge Lobby</button>`;
+      return;
+    }
+    $app.innerHTML = `<h1>Graded Challenge: ${c[1]}</h1><p>Important Note: You are about to start the real graded challenge.</p>
+      <p>(Fixture: questions are simulated. ${c[3]} question(s), no answers recorded.)</p>
+      <button id="begin">Begin the Graded Challenge</button> <button class="grey" data-go="#hub">Back to Challenge Lobby</button>`;
+    document.getElementById("begin").onclick = () => {
+      $app.innerHTML = `<h1>${c[1]}</h1><p>(Question ${c[3]} of ${c[3]})</p><p>0:42 remaining</p><button id="finish">Finish</button>`;
+      document.getElementById("finish").onclick = () => {
+        S.challenges[id] = true; save();
+        $app.innerHTML = `<h1>Well done. You have completed your challenge.</h1><p>Continue to the next challenge or review the remaining challenges and forge your own path forward.</p>
+          <button data-go="#hub">Back to Challenge Lobby</button>`;
+      };
+    };
+  },
+  accomplishment() {
+    $app.innerHTML = `<h1>Your Accomplishment</h1><label for="t">Title *</label><input id="t" type="text"><br><button id="saveAcc">Save</button> <button class="grey" data-go="#hub">Back</button>`;
+    document.getElementById("saveAcc").onclick = () => { const t = document.getElementById("t").value.trim(); if (!t) return; S.accomplishments.push(t); save(); go("hub"); };
+  },
+  school() {
+    $app.innerHTML = `<h1>School and Transcripts</h1><label for="s">School name *</label><input id="s" type="text" placeholder="Start typing to find your school...">
+      <p>(Fixture: the real form needs a school picked from an autocomplete list.)</p><button id="saveSchool">Save</button> <button class="grey" data-go="#hub">Back</button>`;
+    document.getElementById("saveSchool").onclick = () => { const v = document.getElementById("s").value.trim(); if (!v) return; S.school = v; save(); go("hub"); };
+  },
+  fa() {
+    $app.innerHTML = `<h1>Welcome to the Financial Aid Center!</h1><p class="err">STOP: the real Financial Aid Center asks for the CSS Profile, tax forms, bank statements and payslips. This fixture does not simulate it.</p><button data-go="#hub">Back</button>`;
+  },
+  verify() {
+    $app.innerHTML = `<h1>Verify Your Identity</h1><p>To submit proof of identity, we ask you to take a photo of your face and ID card using your webcam.</p>
+      <p class="err">The real step needs a live face photo and a government ID. Automated tests must stop here on the real site. This fixture only simulates the result.</p>
+      <button id="simVerify">Simulate verification (fixture, no camera)</button> <button class="grey" data-go="#hub">Back</button>`;
+    document.getElementById("simVerify").onclick = () => {
+      S.verified = true; save();
+      $app.innerHTML = `<h1>Verification Complete!</h1><p>Your identity has been verified successfully.</p><p>Face Verified · ID Verified</p><button data-go="#hub">Continue</button>`;
+    };
+  },
+  parent() {
+    $app.innerHTML = `<h1>Parent/Guardian Info</h1><label for="pf">First name:</label><input id="pf" type="text"><label for="pl">Last name:</label><input id="pl" type="text">
+      <label for="pe">Email:</label><input id="pe" type="email"><br><button id="saveParent">Save</button> <button class="grey" data-go="#hub">Back</button>`;
+    document.getElementById("saveParent").onclick = () => { if (!document.getElementById("pf").value.trim()) return; S.parent = true; save(); go("hub"); };
+  },
+  disciplinary() {
+    $app.innerHTML = `<h1>Disciplinary, Civil Litigation, Criminal and Military Service Record</h1>
+      <p>Have you ever been found responsible for a disciplinary violation ...? *</p>
+      <label><input type="radio" name="d" value="yes"> Yes</label><label><input type="radio" name="d" value="no"> No</label>
+      <label><input id="dc" type="checkbox"> I acknowledge and agree that I have read, understand and agree to be bound by the Minerva Admissions and Enrollment Certification.</label>
+      <p id="derr" class="err"></p><button id="saveDisc">Save</button> <button class="grey" data-go="#hub">Back</button>`;
+    document.getElementById("saveDisc").onclick = () => {
+      if (!document.querySelector("input[name=d]:checked")) return document.getElementById("derr").textContent = "Choose one";
+      if (!document.getElementById("dc").checked) return document.getElementById("derr").textContent = "Please accept the certification.";
+      S.disciplinary = true; save(); go("hub");
+    };
+  },
+  submitted() {
+    if (!S.submitted) return go("hub");
+    $app.innerHTML = `<h1>Congratulations ${esc(S.applicant.fn)}, your application has been submitted.</h1>
+      <p>You've just completed a major milestone.</p><h2>What happens next.</h2><p>1 Application Review · 2 Document Verification · 3 Decision Notification</p>`;
+  },
+};
+
+function modal(html, wire) {
+  const m = document.createElement("div"); m.className = "modal"; m.innerHTML = `<div>${html}</div>`; document.body.appendChild(m); wire(m);
+}
+function faConfirm() {
+  modal(`<h2>Final Confirmation: Financial Aid Decision</h2><p>Before you submit your application, please confirm your financial aid choice. You've selected No to applying for financial aid.</p>
+    <button id="faYes">Yes, I confirm that I do not plan to apply for financial aid.</button><button class="grey" id="faNo">No, I'd like to update my financial aid decision.</button>`,
+    m => { m.querySelector("#faYes").onclick = () => { m.remove(); markComplete(); }; m.querySelector("#faNo").onclick = () => m.remove(); });
+}
+function markComplete() {
+  modal(`<h2>Mark Your Application as Complete</h2><p>We will automatically submit your application once we receive academic records from your school contacts.</p>
+    <button class="grey" id="mcCancel">Cancel</button><button id="mcYes">Mark as Complete</button>`,
+    m => { m.querySelector("#mcCancel").onclick = () => m.remove(); m.querySelector("#mcYes").onclick = () => {
+      m.remove(); S.submitted = true; S.log.push(["submitted", new Date().toISOString()]); save(); go("submitted"); }; });
+}
+
+document.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) go(b.dataset.go.slice(1)); });
+function render() {
+  const [name, arg] = (location.hash.slice(1) || "part1").split("/");
+  (views[name] || views.part1)(arg);
+}
+window.addEventListener("hashchange", render);
+window.fakePortalReset = () => { S = fresh(); save(); go("part1"); render(); };
+render();
+</script>
+<!-- What the installed extension would inject on this page (content_scripts). Included here so the
+     fixture also works without installing the extension. -->
+<script src="../storage-shim.js"></script>
+<script src="../detector.js"></script>
+<script src="../content.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>detector.js tests</title>
+<style> body { font: 14px system-ui, sans-serif; margin: 16px; } .pass { color: #15803d; } .fail { color: #b91c1c; font-weight: 700; } </style>
+</head>
+<body>
+<h1>detector.js tests</h1>
+<p>Each case is a small HTML snippet using the wording seen in Ben's screenshots (Nov 2026). Open this page from a local server.</p>
+<div id="out"></div>
+<script src="../detector.js"></script>
+<script>
+const CASES = [
+  { name: "Part 1 form (00): nothing complete yet",
+    html: `<h1>Start Your Application</h1><p><span>Contact Details</span><span>Address</span><span>Important Details</span><span>Agreements</span><span>Admission Center Unlocked!</span></p><button>Submit Part One</button>`,
+    expect: [] },
+  { name: "Hub default (01): only Part 1 complete, Part 1 stepper label must not confuse",
+    html: `<h1>Welcome, TEST Applicant</h1><p><span>Part 1</span><span>Part 2</span><span>Part 3</span><span>Official Documents &amp; Information</span><span>Time to Submit Your Application!</span></p>
+      <h2>Your Application Progress</h2><div><div><h3>Part 1</h3><p>Basic Information</p><p>Complete</p></div><div><h3>Part 2</h3><p>How You Think</p><a>Go to section →</a></div>
+      <div><h3>Part 3</h3><p>Accomplishments</p><a>Go to section →</a></div><div><h3>Official Documents &amp; Information</h3><p>Official Records</p><a>Go to section →</a></div></div>
+      <div><div><h3>Understanding</h3><p>Challenge Length: 7 minutes</p><button>Take the Challenge</button></div><div><h3>Math</h3><p>Challenge Length: 8 minutes</p><button>Take the Challenge</button></div></div>
+      <div><div><h3>Verify your ID</h3><p>We need to verify your identity...</p></div><button>Verify Your ID</button></div>
+      <div><div><h3>Parent/Guardian Contact Information</h3><p>Please provide contact information...</p></div><a>Edit →</a></div>
+      <div><div><h3>Disciplinary Record</h3><p>Please answer a few questions...</p></div><button>View Form</button></div>
+      <p><span>Academic Performance</span><span>Financial Aid Application</span><span>ID Verification</span><span>Parent/Guardian Contact Information</span><span>Disciplinary Record</span></p>`,
+    expect: ["part1", "parentGuardian"] },
+  { name: "Challenge Lobby (02): five challenges complete, Expression open",
+    html: `<h1>Challenge Lobby</h1>` + ["Understanding","Creativity","Math","Reasoning","Writing"].map(t => `<div><h3>${t}</h3><p>Challenge Complete ✓</p></div>`).join("") +
+      `<div><h3>Expression</h3><p>Challenge Length: ~15 minutes</p><button>Take the Challenge</button><button>Practice this Challenge</button></div><p>1 Challenge 2 Challenges 3 Challenges 4 Challenges 5 Challenges Part 2 Complete</p>`,
+    expect: ["understanding", "creativity", "math", "reasoning", "writing"] },
+  { name: "Lobby with Expression complete implies ID verification",
+    html: `<div><h3>Expression</h3><p>Challenge Complete ✓</p></div>`,
+    expect: ["expression", "verifyId"] },
+  { name: "Challenge done page (well done): does not name the challenge, so nothing is detected",
+    html: `<h1>Well done. You have completed your challenge.</h1><button>Back to Challenge Lobby</button>`,
+    expect: [] },
+  { name: "Verification Complete page (13/06)",
+    html: `<h1>Verification Complete!</h1><p>Your identity has been verified successfully.</p><p>Face Verified</p><p>ID Verified</p>`,
+    expect: ["verifyId"] },
+  { name: "Financial aid skipped (12/02)",
+    html: `<div><h3>Financial Aid Application</h3><p>You indicated that you do not need Financial Aid. This means that you will not be allowed to apply for aid if admitted.</p></div>`,
+    expect: ["financialAid"] },
+  { name: "Ready to submit (21/01): all part cards complete",
+    html: `<h2>Your Application Progress</h2><div><div><h3>Part 1</h3><p>Complete</p></div><div><h3>Part 2</h3><p>Complete</p></div><div><h3>Part 3</h3><p>Complete</p></div><div><h3>Official Documents &amp; Information</h3><p>Complete</p></div></div><p>Congratulations! You've completed everything to submit your application.</p>`,
+    expect: ["part1", "closePart2", "closePart3", "closeDocs", "understanding", "creativity", "math", "reasoning", "writing", "expression",
+             "accomplishments", "academic", "verifyId", "parentGuardian", "disciplinary"] },
+  { name: "Submit-incomplete popup (19): missing steps must not be detected as done",
+    html: `<div><p>You must complete and fill out all required steps. Missing steps:</p><ul><li>Enrollment section;</li><li>At least 3 Accomplishments;</li><li>Expression challenge;</li></ul></div>`,
+    expect: [] },
+  { name: "Submitted (20/02)",
+    html: `<h1>Congratulations TEST, your application has been submitted.</h1><h2>What happens next.</h2>`,
+    expect: ["submit", "part1", "closePart2", "closePart3", "closeDocs", "understanding", "creativity", "math", "reasoning", "writing", "expression",
+             "accomplishments", "academic", "verifyId", "parentGuardian", "disciplinary"] },
+  { name: "Privacy: typed values are never read (an input whose value says Challenge Complete)",
+    html: `<div><h3>Math</h3><input value="Challenge Complete"><button>Take the Challenge</button></div>`,
+    expect: [] },
+];
+const out = document.getElementById("out");
+let failures = 0;
+CASES.forEach(c => {
+  const frame = document.implementation.createHTMLDocument("t");
+  frame.body.innerHTML = c.html;
+  const got = Object.keys(BuddyDetector.detect(frame)).sort();
+  const want = [...c.expect].sort();
+  const ok = JSON.stringify(got) === JSON.stringify(want);
+  if (!ok) failures++;
+  out.insertAdjacentHTML("beforeend", `<p class="${ok ? "pass" : "fail"}">${ok ? "PASS" : "FAIL"} · ${c.name}<br><small>got [${got.join(", ")}] expected [${want.join(", ")}]</small></p>`);
+});
+out.insertAdjacentHTML("afterbegin", `<h2 id="summary">${failures ? failures + " failing" : "All " + CASES.length + " cases pass"}</h2>`);
+</script>
+</body>
+</html>
