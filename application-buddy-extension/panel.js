@@ -37,8 +37,8 @@ const STEPS = [
     desc: "Click \"Close Part 2\" in the Admission Center once all six challenges say Challenge Complete." },
 
   // Part 3. What Have You Achieved
-  { id: "accomplishments", group: "Part 3", name: "Accomplishments (3 minimum, 6 recommended)", type: "writing", min: 60, max: 60, mid: 60, approx: true,
-    desc: "Add at least 3. Minerva grades all of them and uses your three highest scores." },
+  { id: "accomplishments", group: "Part 3", name: "Accomplishments (3 minimum, 6 recommended)", type: "writing", min: 120, max: 180, mid: 120, approx: true,
+    desc: "Set aside 2–3 hours. List up to six possible achievements, draft your strongest three first, then refine them and add up to three more. Make your role, actions, and impact clear. Minerva grades all entries and uses your three highest scores." },
   { id: "closePart3", group: "Part 3", name: "Close Part 3", type: "action", min: 1, max: 1, mid: 1,
     needs: ["accomplishments"],
     desc: "You can edit accomplishments until you close Part 3." },
